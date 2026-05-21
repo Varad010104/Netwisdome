@@ -1,0 +1,180 @@
+const User = require('../models/User');
+const Batch = require('../models/Batch');
+const mongoose = require('mongoose');
+const { sendStudentEnrollmentEmail } = require('../utils/mailer');
+
+const resolveBatchId = async (batchId) => {
+    if (batchId === undefined) return { value: undefined };
+    if (batchId === null || batchId === '') return { value: null };
+
+    const normalized = String(batchId).trim();
+    if (!normalized) return { value: null };
+
+    const batchQuery = [{ batchName: normalized }];
+    if (mongoose.isValidObjectId(normalized)) {
+        batchQuery.push({ _id: normalized });
+    }
+
+    const foundBatch = await Batch.findOne({ $or: batchQuery });
+
+    if (!foundBatch) {
+        return { error: "Invalid batch selected" };
+    }
+
+    return { value: foundBatch._id };
+};
+
+exports.registerStudent = async (req, res) => {
+    try {
+        const { name, email, password, batchId, certificateStatus } = req.body;
+        const plainPassword = password;
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ message: "Email already exists!" });
+
+        const batchResolution = await resolveBatchId(batchId);
+        if (batchResolution.error) {
+            return res.status(400).json({ message: batchResolution.error });
+        }
+
+        const newUser = new User({
+            name,
+            email,
+            password,
+            batchId: batchResolution.value,
+            role: 'student'
+        });
+
+        await newUser.save();
+        const batch = batchResolution.value
+            ? await Batch.findById(batchResolution.value).select('batchName').lean()
+            : null;
+
+        sendStudentEnrollmentEmail({
+            name: newUser.name,
+            email: newUser.email,
+            password: plainPassword,
+            batchId: batchResolution.value || null,
+            batchName: batch?.batchName || 'Unassigned'
+        })
+        .then(() => {
+            console.log("✅ Enrollment email sent:", newUser.email);
+        })
+        .catch((mailError) => {
+            console.error("❌ Enrollment email failed:", mailError.message);
+        });
+
+        res.status(201).json({ message: "Student Registered Successfully!" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email, password }).populate('batchId');
+
+        if (!user) return res.status(401).json({ message: "Invalid Email or Password" });
+
+        res.status(200).json({
+            message: "Login Successful",
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                batchId: user.batchId?._id || user.batchId,
+                batchName: user.batchId?.batchName || ''
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getStudents = async (req, res) => {
+    try {
+        const students = await User.find({ role: { $ne: 'admin' } })
+            .populate('batchId', 'batchName')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(students);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getStudentById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const student = await User.findOne({ _id: id, role: { $ne: 'admin' } })
+            .populate('batchId', 'batchName');
+        if (!student) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
+        return res.status(200).json({ student });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+exports.deleteStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedStudent = await User.findOneAndDelete({ _id: id, role: { $ne: 'admin' } });
+
+        if (!deletedStudent) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        res.status(200).json({ message: "Student deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.updateStudent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, password, batchId, certificateStatus } = req.body;
+
+        const student = await User.findOne({ _id: id, role: { $ne: 'admin' } });
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        if (email && email !== student.email) {
+            const existing = await User.findOne({ email, _id: { $ne: id } });
+            if (existing) return res.status(400).json({ message: "Email already exists!" });
+        }
+
+        let finalBatchId;
+        if (batchId !== undefined) {
+            const batchResolution = await resolveBatchId(batchId);
+            if (batchResolution.error) {
+                return res.status(400).json({ message: batchResolution.error });
+            }
+            finalBatchId = batchResolution.value;
+        }
+
+        if (name !== undefined) student.name = name;
+        if (email !== undefined) student.email = email;
+        if (password !== undefined && password !== '') student.password = password;
+        if (batchId !== undefined) student.batchId = finalBatchId;
+        if (certificateStatus !== undefined) {
+            const normalized = String(certificateStatus).toLowerCase();
+            if (!['pending', 'issued'].includes(normalized)) {
+                return res.status(400).json({ message: "Invalid certificate status" });
+            }
+            student.certificateStatus = normalized;
+            student.certificateIssuedAt = normalized === 'issued' ? new Date() : null;
+        }
+
+        await student.save();
+        const updated = await User.findById(student._id).populate('batchId', 'batchName');
+        res.status(200).json({ message: "Student updated successfully", student: updated });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

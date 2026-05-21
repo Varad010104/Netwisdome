@@ -1,0 +1,72 @@
+/* ═══════════════════════════════════════════════════════════
+   ADMIN DASHBOARD LAYOUT — Premium SaaS Container
+   ═══════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+.admin-layout {
+  min-height: 100vh;
+  background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 40%, #eef2ff 100%);
+  font-family: 'Inter', sans-serif;
+}
+
+.main-content {
+  margin-left: 270px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-area {
+  padding: 28px 32px;
+  max-width: 1600px;
+  animation: contentFadeIn 0.4s ease-out;
+}
+
+/* Smooth page transition animation */
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom scrollbar for main content */
+.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 980px) {
+  .main-content {
+    margin-left: 0;
+    min-height: auto;
+  }
+
+  .content-area {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-area {
+    padding: 16px 12px;
+  }
+}

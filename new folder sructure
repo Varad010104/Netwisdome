@@ -1,0 +1,67 @@
+NETWISDOME (Root Directory)
+├── 📂 backend
+│   ├── 📂 config
+│   │   └── 📄 db.js
+│   ├── 📂 controllers
+│   │   ├── 📄 assignmentController.js
+│   │   └── 📄 submissionController.js
+│   ├── 📂 models
+│   │   ├── 📄 Assignment.js
+│   │   └── 📄 Submission.js
+│   ├── 📂 node_modules
+│   ├── 📂 routes
+│   │   ├── 📄 assignmentRoutes.js
+│   │   └── 📄 submissionRoutes.js
+│   ├── 📄 .env
+│   ├── 📄 package-lock.json
+│   ├── 📄 package.json
+│   └── 📄 server.js
+│
+├── 📂 frontend
+│   ├── 📂 node_modules
+│   ├── 📂 public
+│   └── 📂 src
+│       ├── 📂 assets
+│       ├── 📂 components
+│       │   ├── 📂 common
+│       │   └── 📂 layout
+│       └── 📂 pages
+│           ├── 📂 admin
+│           │   ├── 📄 AdminDashboard.css / .jsx
+│           │   ├── 📄 CreateAssignmentTab.css / .jsx
+│           │   ├── 📄 EvaluationTab.css / .jsx
+│           │   ├── 📄 OverviewTab.css / .jsx
+│           │   ├── 📄 ReportsTab.css / .jsx
+│           │   ├── 📄 Sidebar.css / .jsx
+│           │   └── 📄 StudentsTab.css / .jsx
+│           ├── 📂 auth
+│           │   ├── 📄 Login.css / .jsx
+│           │   └── 📄 LoginAdmin.css / .jsx
+│           └── 📂 student
+│               ├── 📄 AssignedAssignments.css / .jsx
+│               ├── 📄 AssignmentDetail.css / .jsx
+│               ├── 📄 AssignmentList.css / .jsx
+│               ├── 📄 Assignments.css / .jsx
+│               ├── 📄 AutoResult.css / .jsx
+│               ├── 📄 certificate.css
+│               ├── 📄 Certificates.jsx
+│               ├── 📄 DailyProgress.css / .jsx
+│               ├── 📄 Leaderboard.css / .jsx
+│               ├── 📄 LearningStreak.css / .jsx
+│               ├── 📄 MCQList.css / .jsx
+│               ├── 📄 MCQResult.css / .jsx
+│               ├── 📄 MCQtest.css / .jsx
+│               ├── 📄 ProgressCard.css / .jsx
+│       |       ├── 📄 StudentDashboard.css / .jsx
+│       |        └── 📄 TopStats.css / .jsx
+│       ├── 📄 App.css / .jsx
+│       ├── 📄 index.css
+│       └── 📄 main.jsx
+├── 📄 .gitignore
+├── 📄 eslint.config.js
+├── 📄 index.html
+├── 📄 package-lock.json
+├── 📄 package.json
+├── 📄 README.md
+├── 📄 tsconfig.node.json
+└── 📄 vite.config.js

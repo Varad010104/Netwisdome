@@ -1,0 +1,127 @@
+assignment-platform/
+│
+├── client/                         # React Frontend
+│   ├── public/
+│   │   └── index.html
+│   │
+│   └── src/
+│       ├── assets/                 # images, icons, fonts
+│       │   ├── images/
+│       │   └── icons/
+│       │
+│       ├── components/             # Reusable UI components
+│       │   ├── common/
+│       │   │   ├── Button.jsx
+│       │   │   ├── Input.jsx
+│       │   │   ├── Modal.jsx
+│       │   │   └── Loader.jsx
+│       │   │
+│       │   ├── layout/
+│       │   │   ├── Navbar.jsx
+│       │   │   ├── Sidebar.jsx
+│       │   │   └── Footer.jsx
+│       │
+│       ├── pages/                  # Page-level components
+│       │   ├── auth/
+│       │   │   ├── Login.jsx
+│       │   │   └── ForgotPassword.jsx
+│       │   │
+│       │   ├── student/
+│       │   │   ├── StudentDashboard.jsx
+│       │   │   ├── AssignmentList.jsx
+│       │   │   ├── AssignmentDetail.jsx
+│       │   │   ├── SubmissionPage.jsx
+│       │   │   ├── AutoResult.jsx
+│       │   │   └── DailyProgress.jsx
+│       │   │
+│       │   ├── admin/
+│       │   │   ├── AdminDashboard.jsx
+│       │   │   ├── StudentManagement.jsx
+│       │   │   ├── AssignmentCreate.jsx
+│       │   │   ├── CodingConfig.jsx
+│       │   │   ├── EvaluationReview.jsx
+│       │   │   └── Reports.jsx
+│       │
+│       ├── routes/                 # React Router
+│       │   ├── AdminRoutes.jsx
+│       │   ├── StudentRoutes.jsx
+│       │   └── ProtectedRoute.jsx
+│       │
+│       ├── services/               # API calls
+│       │   ├── api.js               # axios config
+│       │   ├── authService.js
+│       │   ├── assignmentService.js
+│       │   ├── submissionService.js
+│       │   └── reportService.js
+│       │
+│       ├── context/                # Context API / Global state
+│       │   ├── AuthContext.jsx
+│       │   └── UserContext.jsx
+│       │
+│       ├── utils/                  # Helpers
+│       │   ├── formatDate.js
+│       │   ├── calculateScore.js
+│       │   └── constants.js
+│       │
+│       ├── styles/
+│       │   ├── global.css
+│       │   └── theme.css
+│       │
+│       ├── App.jsx
+│       └── main.jsx
+│
+├── server/                         # Node + Express Backend
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── db.js               # MongoDB connection
+│   │   │   ├── env.js
+│   │   │   └── jwt.js
+│   │   │
+│   │   ├── models/                 # MongoDB Schemas
+│   │   │   ├── User.js
+│   │   │   ├── Assignment.js
+│   │   │   ├── Submission.js
+│   │   │   ├── TestCase.js
+│   │   │   ├── ProgressLog.js
+│   │   │   └── Report.js
+│   │
+│   │   ├── controllers/            # Business logic
+│   │   │   ├── authController.js
+│   │   │   ├── studentController.js
+│   │   │   ├── adminController.js
+│   │   │   ├── assignmentController.js
+│   │   │   ├── submissionController.js
+│   │   │   └── reportController.js
+│   │
+│   │   ├── routes/                 # API routes
+│   │   │   ├── authRoutes.js
+│   │   │   ├── studentRoutes.js
+│   │   │   ├── adminRoutes.js
+│   │   │   ├── assignmentRoutes.js
+│   │   │   ├── submissionRoutes.js
+│   │   │   └── reportRoutes.js
+│   │
+│   │   ├── middlewares/
+│   │   │   ├── authMiddleware.js
+│   │   │   ├── roleMiddleware.js
+│   │   │   └── errorMiddleware.js
+│   │
+│   │   ├── services/               # Extra services
+│   │   │   ├── codeExecutor.js      # run code & evaluate
+│   │   │   ├── autoEvaluator.js
+│   │   │   └── reportGenerator.js
+│   │
+│   │   ├── utils/
+│   │   │   ├── generateToken.js
+│   │   │   ├── hashPassword.js
+│   │   │   └── logger.js
+│   │
+│   │   └── app.js                  # Express app
+│   │
+│   ├── server.js                   # Server start
+│   └── package.json
+│
+├── .env
+├── .gitignore
+├── README.md
+└── docker-compose.yml (optional)

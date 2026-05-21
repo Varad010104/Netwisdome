@@ -1,0 +1,29 @@
+.footer-container {
+  width: 100%;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05); /* हलका ट्रान्सपरंट बॅकग्राउंड */
+  backdrop-filter: blur(10px); /* ग्लास इफेक्ट */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  bottom: 0;
+}
+
+.footer-content p {
+  margin: 0;
+  font-family: 'Inter', sans-serif; /* आधुनिक फॉन्ट */
+  font-size: 14px;
+  color: #666; /* प्रोफेशनल ग्रे कलर */
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* डार्क मोडसाठी किंवा प्रीमियम लुकसाठी */
+@media (prefers-color-scheme: dark) {
+  .footer-content p {
+    color: #b0b0b0;
+  }
+}

@@ -1,0 +1,318 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.container {
+  position: relative;
+  width: 750px;
+  height: 400px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(255, 140, 0, 0.2);
+  overflow: hidden;
+}
+
+.container:before {
+  content: "";
+  position: absolute;
+  height: 2000px;
+  width: 2000px;
+  top: -5%;
+  left: 60%;
+  transform: translateY(-50%) skewX(-15deg);
+  background: linear-gradient(-45deg, #FF8C00 0%, #FF5722 100%);
+  transition: 1.2s ease-in-out;
+  z-index: 6;
+}
+
+.forms-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+
+.signin-signup {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 25%;
+  width: 50%;
+  display: grid;
+  z-index: 10;
+  transition: 1.2s ease-in-out;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem;
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  transition: all 0.4s 0.8s ease-in-out;
+}
+
+form.sign-up-form { opacity: 0; z-index: 1; pointer-events: none; }
+form.sign-in-form { z-index: 2; }
+
+.input-field {
+  max-width: 300px;
+  width: 100%;
+  margin: 8px 0;
+  height: 45px;
+  border: none;
+  border-bottom: 2px solid rgba(255, 140, 0, 0.6);
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+}
+
+.input-field input {
+  background: transparent !important;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-size: 0.95rem;
+  width: 100%;
+  padding: 0;
+  appearance: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+}
+
+.input-field input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.input-field input:-webkit-autofill,
+.input-field input:-webkit-autofill:hover,
+.input-field input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset;
+  box-shadow: 0 0 0 1000px transparent inset;
+  -webkit-text-fill-color: inherit;
+}
+
+.btn {
+  width: 140px;
+  background: #FF8C00;
+  border: none;
+  height: 44px;
+  border-radius: 40px;
+  color: #fff;
+  font-weight: 700;
+  margin: 20px 0;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.title { font-size: 2rem; color: #333; margin-bottom: 5px; }
+.toggle-link { color: #FF8C00; cursor: pointer; font-weight: 700; text-decoration: underline; }
+
+/* Panels */
+.panels-container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  z-index: 7;
+  pointer-events: none;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: 1.2s ease-in-out;
+  pointer-events: all;
+}
+
+.right-panel { transform: translateX(0); padding: 3rem 10% 2rem 15%; }
+.left-panel { transform: translateX(-800px); padding: 3rem 15% 2rem 10%; }
+.panel h1 { color: #fff; font-size: 1.8rem; }
+.panel p { color: #fff; font-size: 0.85rem; padding: 10px 0; }
+
+/* Animation Logic - Desktop */
+.container.sign-up-mode:before { transform: translate(-100%, -35%) skewX(-15deg); left: 45%; }
+.container.sign-up-mode .signin-signup { left: 75%; }
+.container.sign-up-mode form.sign-up-form { opacity: 1; z-index: 2; pointer-events: all; }
+.container.sign-up-mode form.sign-in-form { opacity: 0; z-index: 1; pointer-events: none; }
+.container.sign-up-mode .right-panel { transform: translateX(800px); }
+.container.sign-up-mode .left-panel { transform: translateX(0); }
+
+
+/* ================= BUTTON EFFECT ONLY ================= */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover effect */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 140, 0, 0.45);
+  background: linear-gradient(135deg, #FF8C00, #FF5722);
+}
+
+/* Click (press) effect */
+.btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 10px rgba(255, 140, 0, 0.4);
+}
+
+/* Shine animation */
+.btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
+  transition: 0.6s;
+}
+
+.btn:hover::after {
+  left: 120%;
+}
+
+.login-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff4ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(255, 109, 0, 0.25);
+  z-index: 20;
+  animation: toastIn 0.25s ease-out;
+}
+
+.login-toast.success {
+  background: #ecfdf3;
+  color: #047857;
+  border-color: #a7f3d0;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, -8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* --- Responsive Layout for Mobile/Tablet --- */
+.sign-in-toggle-hint {
+  display: none;
+  font-size: 0.85rem;
+  margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+  .sign-in-toggle-hint {
+    display: block;
+  }
+
+  .login-page {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    padding: 20px 15px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    min-height: 480px;
+    padding: 30px 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .container:before {
+    display: none; /* Hide desktop skew background on mobile */
+  }
+
+  .forms-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .signin-signup {
+    position: relative;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    display: block;
+  }
+
+  form {
+    padding: 0;
+    width: 100%;
+  }
+
+  .title {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+  }
+
+  .input-field {
+    max-width: 100%;
+    margin: 12px 0;
+  }
+
+  .panels-container {
+    display: none; /* Hide sliding panel layout on mobile */
+  }
+
+  /* Adjust register toggle links color for high accessibility contrast */
+  .social-text {
+    color: #64748b !important;
+    font-size: 0.88rem;
+  }
+
+  .toggle-link {
+    color: #ff6b00 !important;
+  }
+}
+

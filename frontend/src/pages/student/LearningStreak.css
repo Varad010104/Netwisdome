@@ -1,0 +1,231 @@
+/* 1. Dashboard (Inter) Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+.streak-compact-container {
+  background: white;
+  padding: 20px 20px 30px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+
+  /* 🔥 Cyan shadow + smooth animation */
+  box-shadow:
+    0 12px 30px -5px rgba(34, 211, 238, 0.06),
+    0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: floatCardSoft 4s ease-in-out infinite;
+}
+
+.streak-compact-container:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 40px -10px rgba(34, 211, 238, 0.15),
+    0 8px 16px -4px rgba(0, 0, 0, 0.04);
+}
+
+.streak-inner-card {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.streak-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.title-group h5 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+}
+
+.date-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.days-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.days-row span {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.calendar-grid-mini {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-cell {
+  height: 32px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.calendar-cell:hover:not(.blank) {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.calendar-cell.inactive {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.calendar-cell.blank {
+  background: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+
+.calendar-cell.present {
+  background: #22c55e;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
+}
+
+.calendar-cell.absent {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+}
+
+.calendar-cell.late {
+  background: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+/* Bottom Stats Area */
+.streak-stats-row {
+  margin-top: 16px;
+}
+
+.streak-badge-dark {
+  background: #0f172a;
+  padding: 12px 16px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border: 1px solid #1e293b;
+}
+
+.streak-info p {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.streak-info h6 {
+  margin: 2px 0 0 0;
+  font-size: 1.1rem;
+  color: #22d3ee;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+}
+
+.mini-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 24px;
+}
+
+.bar {
+  width: 4px;
+  background: #22d3ee;
+  border-radius: 4px;
+  transition: height 0.5s ease;
+}
+
+.social-tabs-mini {
+  display: flex;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 14px;
+}
+
+.tab-mini {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  border-radius: 10px;
+  background: transparent;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-mini.active {
+  background: white;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* 🌊 Floating animation (soft) */
+@keyframes floatCardSoft {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+/* 📱 Mobile Responsive */
+@media (max-width: 480px) {
+  .streak-compact-container {
+    padding: 16px 16px 25px 16px;
+  }
+
+  .calendar-grid-mini {
+    gap: 6px;
+  }
+
+  .streak-badge-dark {
+    padding: 10px 12px;
+  }
+
+  .tab-mini {
+    font-size: 0.72rem;
+    padding: 8px;
+  }
+}

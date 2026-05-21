@@ -1,0 +1,35 @@
+/* Google Font Import (Optional pan changla disel) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  /* Black background color for the whole project */
+  background-color: #080808; 
+  color: white;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center; /* Horizontally Center */
+  align-items: center;     /* Vertically Center */
+  min-height: 100vh;
+  width: 100vw;
+  overflow: hidden; /* Scrollbars yenar nahit */
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+* {
+  box-sizing: border-box;
+}

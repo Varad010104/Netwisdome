@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
+
+.top-stats-container {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 16px 20px;
+  border-radius: 20px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  min-height: 110px;
+
+  /* 🔥 ORANGE SHADOW ADD */
+  box-shadow:
+    0 12px 30px -5px rgba(255, 107, 0, 0.05),
+    0 4px 12px -2px rgba(0, 0, 0, 0.02);
+
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: floatOrangeStat 5s ease-in-out infinite;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: #ff6d00;
+
+  /* 🔥 STRONGER ORANGE GLOW ON HOVER */
+  box-shadow:
+    0 20px 40px -10px rgba(255, 109, 0, 0.15),
+    0 8px 16px -4px rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff4ed;
+  color: #ff6d00;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(255, 109, 0, 0.15);
+}
+
+.title-info h4 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.4px;
+}
+
+.sub-text {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.status-pill {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(255, 109, 0, 0.25);
+}
+
+.assignment-mini-list {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.mini-item {
+  flex: 1;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.mini-score {
+  color: #ff6d00;
+  font-weight: 800;
+}
+
+/* 🌊 Soft floating animation */
+@keyframes floatOrangeStat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+
+/* 📱 Responsive Updates */
+@media (max-width: 900px) {
+  .top-stats-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-card {
+    padding: 14px 16px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .status-pill {
+    width: fit-content;
+  }
+
+  .assignment-mini-list {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .title-info h4 {
+    font-size: 1rem;
+  }
+}

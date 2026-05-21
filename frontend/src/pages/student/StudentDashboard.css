@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+.dashboard-layout {
+  display: flex;
+  background: radial-gradient(circle at 10% 20%, rgba(255, 244, 237, 0.4) 0%, rgba(248, 250, 252, 1) 100%);
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent body scroll */
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ⭐ CENTER SCROLLABLE CONTENT */
+.dashboard-content-scrollable {
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-content-inner {
+  padding: 24px;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dashboard-content-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.dashboard-assessment-btn-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 22px;
+}
+
+.dashboard-assessment-btn {
+  background: #fff4ed;
+  color: #ff6d00;
+  border: 1px solid rgba(255, 109, 0, 0.2);
+  padding: 8px 20px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 109, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-assessment-btn:hover {
+  background: #ff6d00;
+  color: #ffffff;
+  border-color: #ff6d00;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 109, 0, 0.2);
+}
+
+/* ⭐ RIGHT PANEL FIXED */
+.dashboard-right-fixed {
+  width: 320px;
+  height: 100vh;
+  padding: 24px 20px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  border-left: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto; 
+}
+
+/* 📱 Responsive Layout */
+@media (max-width: 1100px) {
+  .dashboard-right-fixed {
+    width: 290px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-layout {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+
+  .dashboard-content-scrollable, 
+  .dashboard-right-fixed {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+
+  .dashboard-right-fixed {
+    border-left: none;
+    border-top: 1px solid rgba(226, 232, 240, 0.8);
+    background: transparent;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+  .dashboard-content-inner,
+  .dashboard-right-fixed {
+    padding: 16px;
+  }
+}

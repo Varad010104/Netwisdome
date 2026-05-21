@@ -1,0 +1,217 @@
+import React, { useEffect, useRef, useState } from 'react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import './certificate.css';
+import { getStoredUserInfo } from '../../utils/userInfo';
+
+const Certificate = () => {
+  const certificateRef = useRef(null);
+  const userInfo = getStoredUserInfo();
+  const studentName = userInfo?.name || 'STUDENT NAME';
+  const [isIssued, setIsIssued] = useState(
+    userInfo?.certificateStatus === 'issued' || userInfo?.certificateIssued === true
+  );
+  const [joiningDate, setJoiningDate] = useState(() => {
+    if (!userInfo?.createdAt) return '';
+    const d = new Date(userInfo.createdAt);
+    return Number.isNaN(d.getTime())
+      ? ''
+      : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  });
+  const [issuedDate, setIssuedDate] = useState(() => {
+    if (!userInfo?.certificateIssuedAt) return '';
+    const d = new Date(userInfo.certificateIssuedAt);
+    return Number.isNaN(d.getTime())
+      ? ''
+      : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  });
+
+  useEffect(() => {
+    const refreshStatus = async () => {
+      if (!userInfo?._id) return;
+      const endpoints = [
+        `http://localhost:5055/api/auth/student/${userInfo._id}`,
+        `http://localhost:5000/api/auth/student/${userInfo._id}`,
+        `/api/auth/student/${userInfo._id}`
+      ];
+
+      for (const url of endpoints) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) continue;
+          const data = await res.json();
+          const updated = data?.student || data?.data || null;
+          if (updated) {
+            const nextStatus = updated?.certificateStatus === 'issued' || updated?.certificateIssued === true;
+            setIsIssued(nextStatus);
+            if (updated?.createdAt) {
+              const d = new Date(updated.createdAt);
+              if (!Number.isNaN(d.getTime())) {
+                setJoiningDate(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+              }
+            }
+            if (updated?.certificateIssuedAt) {
+              const d = new Date(updated.certificateIssuedAt);
+              if (!Number.isNaN(d.getTime())) {
+                setIssuedDate(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+              }
+            } else if (nextStatus) {
+              const now = new Date();
+              setIssuedDate(now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+            } else {
+              setIssuedDate('');
+            }
+            const stored = {
+              ...userInfo,
+              certificateStatus: updated.certificateStatus,
+              certificateIssued: updated.certificateIssued,
+              createdAt: updated.createdAt || userInfo?.createdAt,
+              certificateIssuedAt: updated.certificateIssuedAt || (nextStatus ? new Date().toISOString() : null)
+            };
+            localStorage.setItem('userInfo', JSON.stringify(stored));
+          }
+          break;
+        } catch {
+          continue;
+        }
+      }
+    };
+
+    refreshStatus();
+    const intervalId = setInterval(refreshStatus, 3000);
+
+    const onFocus = () => refreshStatus();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') refreshStatus();
+    };
+
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
+
+  const downloadCertificate = async () => {
+    if (!isIssued) return;
+    const element = certificateRef.current;
+    if (!element) return;
+    const card = element.querySelector('.cert-card');
+    if (card) {
+      card.classList.add('exporting');
+    }
+    const width = element.offsetWidth || 700;
+    const height = element.offsetHeight || 740;
+    let canvas;
+    try {
+      canvas = await html2canvas(element, {
+        scale: 3,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+    } finally {
+      if (card) {
+        card.classList.remove('exporting');
+      }
+    }
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [width, height]
+    });
+
+    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+    pdf.save(`${studentName}_Certificate.pdf`);
+  };
+
+  return (
+    <div className={`layout-container ${isIssued ? 'has-download' : 'locked-center'}`}>
+      {isIssued && (
+        <div className="sidebar-left">
+          <button className="download-btn" onClick={downloadCertificate}>
+            Download Certificate
+          </button>
+        </div>
+      )}
+      <div className={`cert-wrapper ${isIssued ? '' : 'locked'}`} ref={certificateRef}>
+        <div className="cert-card">
+          {!isIssued && (
+            <div className="certificate-lock">
+              <div className="lock-badge">Locked</div>
+              <p>Contact Institute to unlock your certificate.</p>
+            </div>
+          )}
+          <div className="corner top-left-navy"></div>
+          <div className="corner top-left-gold"></div>
+          <div className="corner top-right-navy"></div>
+          <div className="corner top-right-gold"></div>
+
+          <div className="content-box">
+            <header className="header">
+              <div className="logo-area">
+                <div className="logo-main">
+                  <span className="n-letter">N</span>
+                  <span className="net-text">NETWISDOME</span>
+                </div>
+              </div>
+              <div className="iso-text">ISO 9001: 2015</div>
+            </header>
+
+            <section className="main-info">
+              <h1 className="title-cert">CERTIFICATE</h1>
+              <p className="of-text">OF</p>
+              <h2 className="master-text">MASTER IN AUTOMOTIVE DOMAIN</h2>
+
+              <div className="recipient-info">
+                <p>This certificate is awarded in recognition of successful completion of</p>
+                <h3 className="student-display-name">{studentName}</h3>
+              </div>
+
+              <p className="desc-text">
+                HANDS-ON TRAINING IN MATLAB PROGRAMMING, SIMULINK MODELING, AND SOFTWARE DEVELOPMENT.
+                THE PROGRAM FOCUSED ON PRACTICAL APPLICATIONS IN AUTOMOTIVE SYSTEMS, CONTROL SYSTEMS,
+                AND EMBEDDED SOFTWARE DEVELOPMENT THROUGH GUIDED PROJECTS AND SIMULATIONS.
+              </p>
+
+              <div className="dates">
+                <div className="date-item">
+                  Joining Date <span className="date-value">{joiningDate || '____________________'}</span>
+                </div>
+                <div className="date-item">
+                  Last Date <span className="date-value">{issuedDate || '____________________'}</span>
+                </div>
+              </div>
+            </section>
+
+            <footer className="footer-signs">
+              <div className="sign-block">
+                <div className="sign-border"></div>
+                <p><strong>CEO</strong></p>
+                <p>Netwisdome</p>
+              </div>
+              <div className="sign-block">
+                <div className="sign-border"></div>
+                <p><strong>Trainer</strong></p>
+                <p>Netwisdome</p>
+              </div>
+            </footer>
+          </div>
+
+          <div className="corner bottom-left-gold"></div>
+          <div className="corner bottom-right-gold"></div>
+          <div className="corner bottom-navy-bar"></div>
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
+export default Certificate;
+

@@ -1,0 +1,211 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.mcq-container {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 24px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 12px 30px -5px rgba(255, 107, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+  margin-bottom: 25px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mcq-container:hover {
+  transform: translateY(-3px);
+  border-color: #ff6d00;
+  box-shadow: 0 20px 40px -10px rgba(255, 109, 0, 0.15), 0 8px 16px -4px rgba(0, 0, 0, 0.04);
+}
+
+.mcq-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.mcq-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mcq-icon-box {
+  background: #fff4ed;
+  color: #ff6d00;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(255, 109, 0, 0.15);
+}
+
+.mcq-header h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: #0f172a;
+  margin: 0;
+}
+
+.mcq-view-all {
+  background: #fff4ed;
+  color: #ff6d00;
+  border: 1px solid rgba(255, 109, 0, 0.15);
+  padding: 7px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mcq-view-all:hover {
+  background: #ff6d00;
+  color: #ffffff;
+  border-color: #ff6d00;
+  transform: translateY(-1px);
+}
+
+/* 🎯 Column Alignment Logic */
+.mcq-grid-header, .mcq-row-card {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr 1.2fr 0.5fr; 
+  align-items: center;
+  padding: 0 20px;
+}
+
+.mcq-grid-header {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Alignment Helpers */
+.col-batch, .col-deadline, .col-status {
+  display: flex;
+  justify-content: center; 
+  text-align: center;
+}
+
+.col-name {
+  text-align: left;
+}
+
+.col-action {
+  display: flex;
+  justify-content: flex-end; 
+}
+
+.mcq-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mcq-row-card {
+  height: 62px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.mcq-row-card:hover {
+  background: #ffffff;
+  border-color: #ffccaa;
+  box-shadow: 0 8px 20px rgba(255, 109, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.mcq-title {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.mcq-batch-tag {
+  background: #ffffff;
+  color: #ff6d00;
+  border: 1px solid #ffedd5;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.mcq-date-val {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.mcq-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mcq-status-pill.pending { background: #fff7ed; color: #f59e0b; border: 1px solid #ffedd5; }
+.mcq-status-pill.completed { background: #f0fdf4; color: #10b981; border: 1px solid #dcfce7; }
+
+.mcq-go-btn {
+  background: #ffffff;
+  color: #ff6d00;
+  border: 1px solid #e2e8f0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mcq-row-card:hover .mcq-go-btn {
+  background: #ff6d00;
+  color: white;
+  border-color: #ff6d00;
+  transform: scale(1.05);
+}
+
+/* 📱 Mobile Responsive Fix */
+@media (max-width: 900px) {
+  .mcq-grid-header { display: none; }
+  .mcq-row-card {
+    grid-template-columns: 1fr; 
+    height: auto;
+    padding: 20px;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+  }
+  .col-batch, .col-deadline, .col-status, .col-action {
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .col-action {
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 10px;
+    margin-top: 4px;
+    justify-content: flex-end;
+  }
+  .mcq-go-btn {
+    width: 100%;
+    height: 40px;
+    border-radius: 12px;
+  }
+}
