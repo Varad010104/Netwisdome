@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios'; 
 import { 
   Trophy, CheckCircle2, MessageSquare, 
@@ -56,8 +56,12 @@ const AutoResult = () => {
     <div className="result-page">
       <div className="result-container">
         
-        {/* Header - Only Download Button (If graded) */}
-        <header className="result-header-simple" style={{ display: 'flex', justifyContent: 'flex-end', padding: '20px' }}>
+        {/* Premium Page Header */}
+        <header className="result-header-simple" style={{ marginBottom: '40px' }}>
+          <div className="header-left">
+            <h1 style={{ fontSize: '24px', fontWeight: '800', margin: 0, color: 'var(--brand-dark)' }}>Assessment Results</h1>
+            <p style={{ fontSize: '13.5px', color: '#64748b', margin: '4px 0 0 0', fontWeight: '600' }}>Review your grade details and instructor feedback</p>
+          </div>
           {isGraded && (
             <button className="download-btn-premium">
               <Download size={18} /> Download Report
@@ -103,8 +107,8 @@ const AutoResult = () => {
           </div>
         ) : (
           /* ðŸŽ¯ CASE 2: à¤¶à¤¿à¤•à¥à¤·à¤•à¤¾à¤‚à¤¨à¥€ à¤®à¤¾à¤°à¥à¤•à¥à¤¸ à¤¦à¤¿à¤²à¥‡ à¤†à¤¹à¥‡à¤¤ (GRADED) */
-          <div className="result-grid-layout">
-            <div className="main-stats-column">
+          <div className="result-graded-wrapper">
+            <div className="result-grid-layout">
               <div className="score-card-premium card">
                 <div className="score-details">
                   <span className="label-text">Final Grade</span>
@@ -124,17 +128,19 @@ const AutoResult = () => {
                 </div>
               </div>
 
-              <div className="feedback-card-premium card full-width">
+              <div className="feedback-card-premium card">
                 <div className="card-header" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <MessageSquare size={18} className="primary-color" />
+                  <MessageSquare size={18} style={{ color: 'var(--brand-orange)' }} />
                   <h3>Instructor's Feedback</h3>
                 </div>
-                <div className="feedback-content-box" style={{ padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', marginTop: '10px' }}>
+                <div className="feedback-content-box" style={{ marginTop: '15px' }}>
                   {submissionData?.feedback || "Great effort! Keep practicing."}
                 </div>
               </div>
+            </div>
 
-              <button className="btn-primary-premium" style={{marginTop: '20px'}} onClick={() => navigate('/student/dashboard')}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
+              <button className="btn-primary-premium" onClick={() => navigate('/student/dashboard')}>
                 Back to Dashboard
               </button>
             </div>

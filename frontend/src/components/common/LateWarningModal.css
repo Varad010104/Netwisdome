@@ -1,0 +1,275 @@
+/* LateWarningModal.css */
+
+.late-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: lateFadeIn 0.3s ease-out forwards;
+}
+
+.late-modal-container {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15),
+              0 0 40px rgba(239, 68, 68, 0.05);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Dark mode compatibility if parent matches */
+@media (prefers-color-scheme: dark) {
+  .late-modal-container {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(239, 68, 68, 0.1);
+  }
+  .late-modal-title {
+    color: #f8fafc !important;
+  }
+  .late-modal-subtitle {
+    color: #94a3b8 !important;
+  }
+  .late-rules-card {
+    background: rgba(30, 41, 59, 0.5) !important;
+    border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  }
+  .rule-item p {
+    color: #cbd5e1 !important;
+  }
+  .btn-cancel-late {
+    background: rgba(51, 65, 85, 0.3) !important;
+    border-color: rgba(71, 85, 105, 0.4) !important;
+    color: #e2m8f0 !important;
+  }
+  .btn-cancel-late:hover {
+    background: rgba(71, 85, 105, 0.5) !important;
+  }
+}
+
+.late-modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.late-modal-close-btn:hover {
+  background: rgba(241, 245, 249, 0.8);
+  color: #0f172a;
+}
+
+/* Icon Warning Glow */
+.late-modal-header-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  position: relative;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.warning-svg {
+  color: #ef4444;
+  z-index: 2;
+  position: relative;
+  animation: lateWobble 1s ease-in-out infinite alternate;
+}
+
+.icon-pulse-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(239, 68, 68, 0.15);
+  border-radius: 50%;
+  z-index: 1;
+  animation: latePulseGlow 2s infinite ease-out;
+}
+
+/* Typography */
+.late-modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.late-modal-subtitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  background: rgba(241, 245, 249, 0.8);
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.late-modal-body {
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.late-warning-highlight {
+  font-size: 15px;
+  color: #ef4444;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.late-rules-card {
+  background: #fff8f8;
+  border: 1px solid #fee2e2;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.rule-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ef4444;
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+.rule-item p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* Footer / Action Buttons */
+.late-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: stretch;
+}
+
+.btn-cancel-late, .btn-confirm-late {
+  flex: 1;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-cancel-late {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.btn-cancel-late:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-confirm-late {
+  background: #ef4444;
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.btn-confirm-late:hover {
+  background: #dc2626;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-confirm-late:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes lateFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes latePulseGlow {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes lateWobble {
+  from {
+    transform: rotate(-3deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}

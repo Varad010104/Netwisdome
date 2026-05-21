@@ -1,10 +1,11 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; 
 import axios from "axios"; 
 import { ChevronRight, ChevronLeft, Timer, Award, AlertCircle, HelpCircle } from "lucide-react";
 import MCQResult from "./MCQResult";
 import "./MCQtest.css";
 import { getStoredUserInfo } from "../../utils/userInfo";
+import LateWarningModal from "../../components/common/LateWarningModal";
 
 const MCQtest = () => {
   const { id } = useParams(); 
@@ -16,9 +17,12 @@ const MCQtest = () => {
   const [answers, setAnswers] = useState([]); 
   const [isFinished, setIsFinished] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isLateModalOpen, setIsLateModalOpen] = useState(false);
   const [studentBatchName, setStudentBatchName] = useState(""); // âœ… à¤µà¤¿à¤¦à¥à¤¯à¤¾à¤°à¥à¤¥à¥à¤¯à¤¾à¤šà¥‡ à¤¬à¥…à¤š à¤¨à¤¾à¤µ
 
   // --- à¥§. à¤¬à¥…à¤•à¤à¤‚à¤¡ à¤®à¤§à¥‚à¤¨ à¤…à¤¸à¤¾à¤‡à¤¨à¤®à¥‡à¤‚à¤Ÿ à¤²à¥‹à¤¡ à¤•à¤°à¤£à¥‡ ---
+  const isLate = assignmentInfo?.lastDate ? new Date() > new Date(assignmentInfo.lastDate) : false;
+
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
@@ -81,7 +85,11 @@ const MCQtest = () => {
       setCurrentQuestion(nextIdx);
       setSelectedOption(answers[nextIdx]); 
     } else {
-      handleFinalSubmit();
+      if (isLate) {
+        setIsLateModalOpen(true);
+      } else {
+        handleFinalSubmit();
+      }
     }
   };
 
@@ -106,6 +114,17 @@ const MCQtest = () => {
 
   return (
     <div className="mcq-wrapper">
+      {isLate && (
+        <div className="practice-mode-banner animate-fade-in" style={{ borderRadius: '16px', marginBottom: '20px', width: '100%', maxWidth: '800px', boxSizing: 'border-box' }}>
+          <div className="banner-content">
+            <span className="banner-badge" style={{ backgroundColor: '#ef4444' }}>PRACTICE MODE</span>
+            <span className="banner-text" style={{ color: '#b91c1c' }}>
+              ⚠️ The due date for this MCQ test has passed. You can complete the test for practice, but your final score will be recorded as <strong>0% (Failed)</strong>.
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="mcq-card main-quiz animate-fade-in">
         
         <div className="mcq-header">
@@ -186,6 +205,17 @@ const MCQtest = () => {
           </div>
         </div>
       </div>
+
+      <LateWarningModal
+        isOpen={isLateModalOpen}
+        onClose={() => setIsLateModalOpen(false)}
+        onConfirm={() => {
+          setIsLateModalOpen(false);
+          handleFinalSubmit();
+        }}
+        dueDate={assignmentInfo?.lastDate}
+        type="mcq"
+      />
     </div>
   );
 };

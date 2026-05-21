@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Trophy, CheckCircle, XCircle, Home, Eye, ChevronUp, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Result save karnyasaathi
@@ -10,13 +10,16 @@ const MCQResult = ({ questions, userAnswers, assignmentInfo }) => {
   const [showReview, setShowReview] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   
+  const isLate = assignmentInfo?.lastDate ? new Date() > new Date(assignmentInfo.lastDate) : false;
+
   // Logic: User ne select keleli string vs Backend chi correct string compare karne
-  const score = questions.reduce((acc, q, index) => {
+  const actualScore = questions.reduce((acc, q, index) => {
     // Backend questions madhe field 'correctAnswer' aahe
     return acc + (userAnswers[index] === q.correctAnswer ? 1 : 0);
   }, 0);
 
-  const percentage = Math.round((score / questions.length) * 100);
+  const score = isLate ? 0 : actualScore;
+  const percentage = isLate ? 0 : Math.round((score / questions.length) * 100);
 
   // --- RESULT BACKEND LA SAVE KARNE ---
   useEffect(() => {
@@ -61,13 +64,47 @@ const MCQResult = ({ questions, userAnswers, assignmentInfo }) => {
       <div className={`result-card ${showReview ? 'expand' : ''}`}>
         
         <div className="result-header">
-          <div className="trophy-container">
-            <Trophy size={50} className="trophy-icon" />
-            <Star className="star-icon s1" size={16} />
-            <Star className="star-icon s2" size={16} />
-          </div>
-          <h2 className="main-title">Quiz Completed!</h2>
+          {isLate ? (
+            <div className="late-mcq-badge" style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              color: '#ef4444',
+              fontSize: '11px',
+              fontWeight: '800',
+              padding: '6px 16px',
+              borderRadius: '20px',
+              display: 'inline-block',
+              marginBottom: '16px',
+              letterSpacing: '1px',
+              border: '1px solid rgba(239, 68, 68, 0.2)'
+            }}>
+              LATE SUBMISSION
+            </div>
+          ) : (
+            <div className="trophy-container">
+              <Trophy size={50} className="trophy-icon" />
+              <Star className="star-icon s1" size={16} />
+              <Star className="star-icon s2" size={16} />
+            </div>
+          )}
+          <h2 className="main-title">{isLate ? "Practice Complete" : "Quiz Completed!"}</h2>
           <p className="sub-text">Test: {assignmentInfo?.title}</p>
+          
+          {isLate && (
+            <div className="late-notice-box" style={{
+              background: '#fff5f5',
+              border: '1px solid #fee2e2',
+              color: '#c53030',
+              padding: '12px 16px',
+              borderRadius: '16px',
+              fontSize: '13px',
+              marginTop: '16px',
+              lineHeight: '1.5',
+              textAlign: 'center',
+              fontWeight: '600'
+            }}>
+              ⚠️ <strong>Deadline Over:</strong> Enforced <strong>0% (Failed)</strong> in the official gradebook. You correctly answered <strong>{actualScore}</strong> of <strong>{questions.length}</strong> questions during practice!
+            </div>
+          )}
         </div>
 
         <div className="stats-container">

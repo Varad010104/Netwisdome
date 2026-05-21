@@ -491,3 +491,50 @@
 
 .text-orange { color: var(--brand-primary); }
 .text-green { color: var(--success); }
+
+/* Practice Mode Banner Styles */
+.practice-mode-banner {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border-bottom: 1px solid #fed7aa;
+  padding: 10px 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 40;
+}
+
+.practice-mode-banner .banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.practice-mode-banner .banner-badge {
+  background: #f97316;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.practice-mode-banner .banner-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c2410c;
+}
+
+@media (max-width: 768px) {
+  .practice-mode-banner {
+    padding: 10px 20px;
+  }
+  .practice-mode-banner .banner-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}

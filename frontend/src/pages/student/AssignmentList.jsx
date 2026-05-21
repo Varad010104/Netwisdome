@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -187,8 +187,8 @@ const AssignmentList = () => {
                       <td className="text-center">
                         {isCompleted ? (
                           <div className="asgn-action-wrap">
-                            <div className="asgn-score-badge">
-                              Score: {scoreValue !== null && scoreValue !== undefined ? scoreValue : 'Pending Review'}
+                            <div className="asgn-score-badge" style={submission?.isLate ? { background: '#fef2f2', color: '#ef4444', borderColor: '#fee2e2' } : {}}>
+                              Score: {scoreValue !== null && scoreValue !== undefined ? (submission?.isLate ? `${scoreValue} (Late)` : scoreValue) : 'Pending Review'}
                             </div>
                             <button
                               type="button"

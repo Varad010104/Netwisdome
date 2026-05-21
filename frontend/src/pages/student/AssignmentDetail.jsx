@@ -7,6 +7,7 @@ import {
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './AssignmentDetail.css';
 import { getStoredUserInfo } from "../../utils/userInfo";
+import LateWarningModal from '../../components/common/LateWarningModal';
 
 const AssignmentDetail = () => {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ const AssignmentDetail = () => {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false); // New state for UX
   const [studentBatchName, setStudentBatchName] = useState('');
+  const [isLateModalOpen, setIsLateModalOpen] = useState(false);
+
+  const isLate = activeQuestion?.lastDate ? new Date() > new Date(activeQuestion.lastDate) : false;
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -47,9 +51,14 @@ const AssignmentDetail = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (forceLateSubmit = false) => {
     if (!submission.trim()) {
       alert("Please enter your solution before submitting.");
+      return;
+    }
+
+    if (isLate && !forceLateSubmit) {
+      setIsLateModalOpen(true);
       return;
     }
     
@@ -69,7 +78,8 @@ const AssignmentDetail = () => {
         studentName: userInfo.name,
         batchName: userInfo.batchId?.batchName || userInfo.batchName || activeQuestion?.batchId?.batchName || '',
         practicalAnswer: submission,
-        status: 'pending'
+        status: isLate ? 'graded' : 'pending',
+        score: isLate ? 0 : 0
       };
       
       await axios.post('http://localhost:5055/api/assignments/submit', submissionData);
@@ -129,6 +139,17 @@ const AssignmentDetail = () => {
           </div>
         </div>
       </header>
+
+      {isLate && (
+        <div className="practice-mode-banner animate-fade-in">
+          <div className="banner-content">
+            <span className="banner-badge">PRACTICE MODE</span>
+            <span className="banner-text">
+              ⚠️ The deadline for this assignment has passed. You can practice, but your submission will automatically receive <strong>0 marks (Failed)</strong>.
+            </span>
+          </div>
+        </div>
+      )}
 
       <main className="assignment-content">
         <div className="details-sidebar custom-scrollbar">
@@ -232,6 +253,17 @@ const AssignmentDetail = () => {
           </div>
         </div>
       </main>
+
+      <LateWarningModal
+        isOpen={isLateModalOpen}
+        onClose={() => setIsLateModalOpen(false)}
+        onConfirm={() => {
+          setIsLateModalOpen(false);
+          handleSubmit(true);
+        }}
+        dueDate={activeQuestion?.lastDate}
+        type="practical"
+      />
     </div>
   );
 };

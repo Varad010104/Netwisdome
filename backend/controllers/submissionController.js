@@ -8,9 +8,26 @@ const submitAssignment = async (req, res) => {
     const { assignmentId, studentId, studentName, batchName, answers, practicalAnswer, score, status } = req.body;
 
     let assignmentType = '';
+    let isLate = false;
+    let finalScore = score;
+    let finalStatus = status;
+    let finalFeedback = req.body.feedback || '';
+
     if (assignmentId && mongoose.Types.ObjectId.isValid(assignmentId)) {
-      const assignment = await Assignment.findById(assignmentId).select('type');
-      assignmentType = assignment?.type || '';
+      const assignment = await Assignment.findById(assignmentId);
+      if (assignment) {
+        assignmentType = assignment.type || '';
+        
+        // Check if current date is past the assignment due date
+        const now = new Date();
+        const lastDate = new Date(assignment.lastDate);
+        if (now > lastDate) {
+          isLate = true;
+          finalScore = 0; // Forced to 0 marks
+          finalStatus = 'graded'; // Auto-graded
+          finalFeedback = `[Late Submission] Automatically graded as 0 (Failed) due to submission after the due date (${lastDate.toLocaleDateString('en-GB')}).`;
+        }
+      }
     }
 
     // Practical/MCQ assignment एकदाच submit करू द्या
@@ -44,8 +61,10 @@ const submitAssignment = async (req, res) => {
       batchName: resolvedBatchName,
       answers,
       practicalAnswer,
-      score,
-      status
+      score: finalScore,
+      status: finalStatus,
+      feedback: finalFeedback,
+      isLate
     });
 
     const savedSubmission = await newSubmission.save();

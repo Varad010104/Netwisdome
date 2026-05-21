@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -210,8 +210,8 @@ const AllAssesmentlist = () => {
                       <td className="all-asgn-center">
                         {isCompleted ? (
                           <div className="all-asgn-action-wrap">
-                            <div className="all-asgn-score-box">
-                              Score: {scoreValue !== null && scoreValue !== undefined ? scoreValue : 'Pending Review'}
+                            <div className="all-asgn-score-box" style={submission?.isLate ? { background: '#fef2f2', color: '#ef4444', borderColor: '#fee2e2' } : {}}>
+                              Score: {scoreValue !== null && scoreValue !== undefined ? (submission?.isLate ? `${scoreValue} (Late)` : scoreValue) : 'Pending Review'}
                             </div>
                             <button
                               type="button"
