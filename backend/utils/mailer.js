@@ -404,11 +404,56 @@ ${FRONTEND_URL}
   }
 };
 
+const sendCustomReminderEmail = async (email, name, subject, body) => {
+  const mailOptions = {
+    from: `"Netwisdome" <${process.env.SMTP_USER}>`,
+    replyTo: process.env.MAIL_FROM || process.env.SMTP_USER,
+    to: email,
+    subject: subject || "Reminder: Pending Assignments",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="UTF-8">
+          <style>
+              body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+              .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+              .header { background: linear-gradient(135deg, #1e3a5f 0%, #0b2a4a 100%); padding: 30px; text-align: center; }
+              .header h1 { margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; }
+              .content { padding: 40px 30px; }
+              .greeting { font-size: 18px; color: #1f2937; margin-bottom: 20px; font-weight: 600; }
+              .footer { background: #1e293b; padding: 20px; text-align: center; }
+              .footer p { color: #94a3b8; font-size: 12px; margin: 5px 0; }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <div class="header">
+                  <h1>Netwisdome LMS</h1>
+              </div>
+              <div class="content">
+                  <div class="greeting">Hello ${name},</div>
+                  <p style="color: #475569; font-size: 15px; line-height: 1.6; white-space: pre-line;">
+                      ${body}
+                  </p>
+              </div>
+              <div class="footer">
+                  <p>&copy; ${new Date().getFullYear()} Netwisdome LMS. All rights reserved.</p>
+              </div>
+          </div>
+      </body>
+      </html>
+    `
+  };
+  return transporter.sendMail(mailOptions);
+};
+
 // ========================================================
 // 5. EXPORT
 // ========================================================
 module.exports = {
   sendAssignmentPublishedEmails,
   sendStudentEnrollmentEmail,
-  verifySMTPConnection
+  verifySMTPConnection,
+  sendCustomReminderEmail
 };

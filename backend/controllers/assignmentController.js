@@ -9,7 +9,7 @@ const Batch      = require('../models/Batch');
 const mongoose   = require('mongoose');
 
 // Import the exact exported name from the mailer
-const { sendAssignmentPublishedEmails } = require('../utils/mailer'); 
+const { sendAssignmentPublishedEmails, sendCustomReminderEmail } = require('../utils/mailer'); 
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -186,6 +186,37 @@ const deleteAssignment = async (req, res) => {
   }
 };
 
+const sendReminderEmails = async (req, res) => {
+  try {
+    const { students, subject, body } = req.body;
+    if (!Array.isArray(students) || students.length === 0) {
+      return res.status(400).json({ message: "No recipients provided." });
+    }
+
+    const emailPromises = students.map(student => {
+      const email = student.email;
+      const name = student.name || 'Student';
+      return sendCustomReminderEmail(email, name, subject, body)
+        .then(() => ({ email, success: true }))
+        .catch(err => ({ email, success: false, error: err.message }));
+    });
+
+    const results = await Promise.all(emailPromises);
+    const sent = results.filter(r => r.success).length;
+    const failed = results.filter(r => !r.success).length;
+
+    return res.status(200).json({
+      message: `Reminders processed. Sent: ${sent}, Failed: ${failed}`,
+      sent,
+      failed,
+      results
+    });
+  } catch (error) {
+    console.error("[sendReminderEmails] Error:", error);
+    return res.status(500).json({ message: "Internal server error while sending reminders.", error: error.message });
+  }
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 
-module.exports = { createAssignment, getAssignments, deleteAssignment };
+module.exports = { createAssignment, getAssignments, deleteAssignment, sendReminderEmails };

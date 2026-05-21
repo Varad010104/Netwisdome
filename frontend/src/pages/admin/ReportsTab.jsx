@@ -329,6 +329,10 @@ const ReportsTab = () => {
   const [exportingPdf,    setExportingPdf]    = useState(false);
   const [exportingExcel,  setExportingExcel]  = useState(false);
   const [toast,           setToast]           = useState(null);
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState('all');
+  const [showHeatmap,          setShowHeatmap]          = useState(false);
+  const [selectedStudents,      setSelectedStudents]      = useState([]);
+  const [reminderModal,         setReminderModal]         = useState(null);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
@@ -505,6 +509,9 @@ const ReportsTab = () => {
     return Array.from(grouped.values())
       .map((s) => {
         const avgPercent = s.totalMarks > 0 ? (s.totalScore / s.totalMarks) * 100 : 0;
+        const isAtRisk = avgPercent < 50 || s.pendingCount >= 2;
+        const isEligibleForCertificate = s.completedCount > 0 && s.pendingCount === 0 && avgPercent >= 50;
+
         return {
           ...s,
           reportCount:    s.reports.length,
@@ -512,10 +519,62 @@ const ReportsTab = () => {
           avgScoreText:   `${avgPercent.toFixed(1)}%`,
           latestDateText: s.latestDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
           status: s.pendingCount === 0 ? 'Completed' : 'Pending',
+          isAtRisk,
+          isEligibleForCertificate,
         };
       })
       .sort((a, b) => b.latestDate - a.latestDate);
   }, [filteredSubmissions]);
+
+  const finalFilteredData = useMemo(() => {
+    return filteredData.filter(student => {
+      if (activeCategoryFilter === 'atRisk') return student.isAtRisk;
+      if (activeCategoryFilter === 'eligible') return student.isEligibleForCertificate;
+      return true;
+    });
+  }, [filteredData, activeCategoryFilter]);
+
+  const gradeDistribution = useMemo(() => {
+    let excellent = 0;
+    let good = 0;
+    let average = 0;
+    let needsImprovement = 0;
+
+    filteredData.forEach(student => {
+      if (student.avgPercent >= 90) excellent++;
+      else if (student.avgPercent >= 75) good++;
+      else if (student.avgPercent >= 50) average++;
+      else needsImprovement++;
+    });
+
+    const total = filteredData.length || 1;
+    return {
+      excellent: { count: excellent, pct: ((excellent / total) * 100).toFixed(0) },
+      good: { count: good, pct: ((good / total) * 100).toFixed(0) },
+      average: { count: average, pct: ((average / total) * 100).toFixed(0) },
+      needsImprovement: { count: needsImprovement, pct: ((needsImprovement / total) * 100).toFixed(0) },
+    };
+  }, [filteredData]);
+
+  const heatmapAssignments = useMemo(() => {
+    return [...new Set(filteredSubmissions.map(s => s.assignment).filter(Boolean))];
+  }, [filteredSubmissions]);
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedStudents(finalFilteredData.map(s => s.id));
+    } else {
+      setSelectedStudents([]);
+    }
+  };
+
+  const handleSelectStudent = (id) => {
+    if (selectedStudents.includes(id)) {
+      setSelectedStudents(selectedStudents.filter(sid => sid !== id));
+    } else {
+      setSelectedStudents([...selectedStudents, id]);
+    }
+  };
 
   const reportStats = useMemo(() => {
     const total     = filteredData.length;
@@ -1693,6 +1752,170 @@ const ReportsTab = () => {
         ))}
       </div>
 
+      {/* 📊 Score Distribution Breakdown & Health Metrics Panel */}
+      <div className="reports-analytics-panel" style={{
+        background: '#ffffff', borderRadius: '16px', padding: '20px', marginBottom: '20px',
+        boxShadow: '0 4px 18px rgba(2,6,23,0.07)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px'
+      }}>
+        <div>
+          <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: '13.5px', fontWeight: '800', color: '#0f172a', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>📊</span> Score Distribution Breakdown
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '11px' }}>
+            {[
+              { label: 'Excellent (90%+)', val: gradeDistribution.excellent, color: 'linear-gradient(90deg, #10b981 0%, #34d399 100%)' },
+              { label: 'Good (75-89%)', val: gradeDistribution.good, color: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)' },
+              { label: 'Average (50-74%)', val: gradeDistribution.average, color: 'linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)' },
+              { label: 'Needs Improvement (<50%)', val: gradeDistribution.needsImprovement, color: 'linear-gradient(90deg, #ef4444 0%, #f87171 100%)' },
+            ].map((item) => (
+              <div key={item.label} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', color: '#475569' }}>
+                  <span>{item.label}</span>
+                  <span>{item.val.count} student{item.val.count === 1 ? '' : 's'} ({item.val.pct}%)</span>
+                </div>
+                <div style={{ height: '8px', background: '#f1f5f9', borderRadius: '10px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', background: item.color, width: `${item.val.pct}%`, borderRadius: '10px', transition: 'width 0.8s ease-out' }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ borderLeft: '1px solid #f1f5f9', paddingLeft: '20px' }}>
+          <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: '13.5px', fontWeight: '800', color: '#0f172a', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>🎯</span> LMS Performance Summary
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', height: 'calc(100% - 32px)' }}>
+            <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>At-Risk Rate</span>
+              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '20px', fontWeight: '800', color: '#ef4444', marginTop: '4px' }}>
+                {filteredData.length > 0 ? ((filteredData.filter(s => s.isAtRisk).length / filteredData.length) * 100).toFixed(0) : 0}%
+              </span>
+            </div>
+            <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Cert Eligible</span>
+              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '20px', fontWeight: '800', color: '#10b981', marginTop: '4px' }}>
+                {filteredData.length > 0 ? ((filteredData.filter(s => s.isEligibleForCertificate).length / filteredData.length) * 100).toFixed(0) : 0}%
+              </span>
+            </div>
+            <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Avg Completed Tasks</span>
+              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '20px', fontWeight: '800', color: '#1e3a5f', marginTop: '4px' }}>
+                {filteredData.length > 0 ? (filteredData.reduce((sum, s) => sum + s.completedCount, 0) / filteredData.length).toFixed(1) : 0}
+              </span>
+            </div>
+            <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <span style={{ fontSize: '10px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Avg Pending Tasks</span>
+              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: '20px', fontWeight: '800', color: '#f59e0b', marginTop: '4px' }}>
+                {filteredData.length > 0 ? (filteredData.reduce((sum, s) => sum + s.pendingCount, 0) / filteredData.length).toFixed(1) : 0}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Heatmap Toggle Button & Collapsible Panel */}
+      <div style={{ marginBottom: '20px' }}>
+        <button
+          onClick={() => setShowHeatmap(!showHeatmap)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            padding: '10px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: '800',
+            background: 'linear-gradient(135deg, #1e3a5f 0%, #0b2a4a 100%)', color: '#ffffff',
+            border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(15,31,58,0.15)',
+            transition: 'all 0.2s', outline: 'none'
+          }}
+        >
+          {showHeatmap ? '🗺️ Hide Batch Progress Map' : '🗺️ Show Batch Progress Map'}
+        </button>
+
+        {showHeatmap && (
+          <div className="heatmap-panel fade-in" style={{
+            background: '#ffffff', borderRadius: '16px', padding: '20px', marginTop: '12px',
+            boxShadow: '0 4px 18px rgba(2,6,23,0.07)', border: '1px dashed #cbd5e1'
+          }}>
+            <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: '14px', fontWeight: '800', color: '#0f172a', marginBottom: '14px' }}>🗺️ Assignment Heatmap Grid</h3>
+            {heatmapAssignments.length === 0 ? (
+              <p style={{ fontSize: '12px', color: '#64748b' }}>No assignments found for this selection.</p>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: '600px' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: 'left', fontSize: '11px', fontWeight: '800', color: '#475569', padding: '10px 8px', borderBottom: '2px solid #e2e8f0' }}>Student Name</th>
+                      {heatmapAssignments.map(a => (
+                        <th key={a} style={{
+                          fontSize: '10px', fontWeight: '800', color: '#475569', padding: '10px 8px',
+                          borderBottom: '2px solid #e2e8f0', minWidth: '110px', textAlign: 'center',
+                          whiteSpace: 'nowrap'
+                        }} title={a}>
+                          {a.length > 15 ? `${a.substring(0, 12)}...` : a}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredData.map(student => (
+                      <tr key={student.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ fontSize: '12px', fontWeight: '700', color: '#1e293b', padding: '10px 8px' }}>{student.name}</td>
+                        {heatmapAssignments.map(a => {
+                          const sub = student.reports.find(r => r.assignment === a);
+                          let color = '#cbd5e1'; // Not Started
+                          let tooltip = 'Not Started';
+                          if (sub) {
+                            if (sub.status === 'Completed') {
+                              const pct = sub.scoreValue / sub.totalMarks;
+                              if (pct >= 0.5) {
+                                color = '#10b981'; // Passed
+                                tooltip = `Passed: ${sub.scoreValue}/${sub.totalMarks} (${sub.dateText})`;
+                              } else {
+                                color = '#ef4444'; // Failed
+                                tooltip = `Failed: ${sub.scoreValue}/${sub.totalMarks} (${sub.dateText})`;
+                              }
+                            } else {
+                              color = '#f59e0b'; // Pending
+                              tooltip = 'Submitted (Pending Review)';
+                            }
+                          }
+                          return (
+                            <td key={a} style={{ padding: '8px', textAlign: 'center' }}>
+                              <div
+                                style={{
+                                  width: '24px', height: '24px', borderRadius: '6px', background: color,
+                                  margin: '0 auto', cursor: 'pointer', border: '1px solid rgba(0,0,0,0.05)',
+                                  transition: 'transform 0.1s'
+                                }}
+                                title={tooltip}
+                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
+                                onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
+                              />
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '18px', marginTop: '16px', fontSize: '11px', fontWeight: '700', color: '#64748b', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: '#10b981' }} /> Passed (50%+)
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: '#ef4444' }} /> Failed (&lt;50%)
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: '#f59e0b' }} /> Pending review
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '12px', height: '12px', borderRadius: '4px', background: '#cbd5e1' }} /> Not started
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Filters */}
       <div className="filter-card">
         <div className="search-bar">
@@ -1731,13 +1954,102 @@ const ReportsTab = () => {
             <Filter size={14} /> {filteredData.length} Students
           </button>
         </div>
+
+        {/* Dynamic Categorization Segment Controls */}
+        <div className="filter-categories" style={{ display: 'flex', gap: '10px', marginTop: '14px', borderTop: '1px solid #f1f5f9', paddingTop: '12px', width: '100%', flexWrap: 'wrap' }}>
+          <button
+            className={`cat-btn ${activeCategoryFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setActiveCategoryFilter('all')}
+            style={{
+              padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '700',
+              background: activeCategoryFilter === 'all' ? 'linear-gradient(135deg, #1e3a5f 0%, #0b2a4a 100%)' : '#f1f5f9',
+              color: activeCategoryFilter === 'all' ? '#ffffff' : '#64748b',
+              border: 'none', cursor: 'pointer', transition: 'all 0.2s', outline: 'none'
+            }}
+          >
+            📋 All Students ({filteredData.length})
+          </button>
+          <button
+            className={`cat-btn ${activeCategoryFilter === 'atRisk' ? 'active' : ''}`}
+            onClick={() => setActiveCategoryFilter('atRisk')}
+            style={{
+              padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '700',
+              background: activeCategoryFilter === 'atRisk' ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : '#f1f5f9',
+              color: activeCategoryFilter === 'atRisk' ? '#ffffff' : '#ef4444',
+              border: 'none', cursor: 'pointer', transition: 'all 0.2s', outline: 'none',
+              boxShadow: activeCategoryFilter === 'atRisk' ? '0 2px 8px rgba(239,68,68,0.3)' : 'none'
+            }}
+          >
+            🚨 At-Risk ({filteredData.filter(s => s.isAtRisk).length})
+          </button>
+          <button
+            className={`cat-btn ${activeCategoryFilter === 'eligible' ? 'active' : ''}`}
+            onClick={() => setActiveCategoryFilter('eligible')}
+            style={{
+              padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '700',
+              background: activeCategoryFilter === 'eligible' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#f1f5f9',
+              color: activeCategoryFilter === 'eligible' ? '#ffffff' : '#10b981',
+              border: 'none', cursor: 'pointer', transition: 'all 0.2s', outline: 'none',
+              boxShadow: activeCategoryFilter === 'eligible' ? '0 2px 8px rgba(16,185,129,0.3)' : 'none'
+            }}
+          >
+            🎓 Certificate Ready ({filteredData.filter(s => s.isEligibleForCertificate).length})
+          </button>
+        </div>
       </div>
+
+      {/* Selected Bulk Actions Bar */}
+      {selectedStudents.length > 0 && (
+        <div className="bulk-actions-bar fade-in" style={{
+          background: 'linear-gradient(90deg, #1e3a5f 0%, #0b2a4a 100%)',
+          color: '#ffffff', padding: '12px 20px', borderRadius: '12px',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          marginBottom: '16px', boxShadow: '0 4px 18px rgba(15,31,58,0.25)'
+        }}>
+          <span style={{ fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span>🔔</span> Selected {selectedStudents.length} student{selectedStudents.length > 1 ? 's' : ''}
+          </span>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={() => {
+                const pendingCount = filteredData
+                  .filter(s => selectedStudents.includes(s.id))
+                  .reduce((sum, s) => sum + s.pendingCount, 0);
+                
+                setReminderModal({
+                  students: filteredData.filter(s => selectedStudents.includes(s.id)),
+                  pendingCount,
+                  stage: 'draft'
+                });
+              }}
+              style={{
+                padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '800',
+                background: '#ff6b00', color: '#ffffff', border: 'none', cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(255,107,0,0.3)', transition: 'all 0.15s'
+              }}
+            >
+              ✉️ Send reminders
+            </button>
+            <button
+              onClick={() => setSelectedStudents([])}
+              style={{
+                padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '700',
+                background: 'rgba(255,255,255,0.15)', color: '#ffffff', border: 'none', cursor: 'pointer',
+                transition: 'all 0.15s'
+              }}
+            >
+              Deselect
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div className="table-card">
         <div className="table-scroll">
           <table className="custom-table">
             <colgroup>
+              <col style={{ width: '45px' }} />
               <col className="col-student" />
               <col className="col-assignment" />
               <col className="col-date" />
@@ -1747,6 +2059,14 @@ const ReportsTab = () => {
             </colgroup>
             <thead>
               <tr>
+                <th style={{ width: '45px', paddingLeft: '12px' }}>
+                  <input
+                    type="checkbox"
+                    checked={finalFilteredData.length > 0 && selectedStudents.length === finalFilteredData.length}
+                    onChange={handleSelectAll}
+                    style={{ cursor: 'pointer', width: '15px', height: '15px' }}
+                  />
+                </th>
                 <th>Student</th>
                 <th>Reports</th>
                 <th>Latest Submission</th>
@@ -1758,26 +2078,54 @@ const ReportsTab = () => {
             <tbody>
               {loading ? (
                 <SkeletonRows />
-              ) : filteredData.length === 0 ? (
+              ) : finalFilteredData.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="table-empty">
+                  <td colSpan="7" className="table-empty">
                     <div className="empty-state">
                       <FileBarChart2 size={40} />
-                      <p>No report data found</p>
+                      <p>No student records found</p>
                       <span>Try adjusting your filters or search query</span>
                     </div>
                   </td>
                 </tr>
               ) : (
-                filteredData.map((student) => (
+                finalFilteredData.map((student) => (
                   <tr key={student.id}>
+                    <td style={{ paddingLeft: '12px' }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedStudents.includes(student.id)}
+                        onChange={() => handleSelectStudent(student.id)}
+                        style={{ cursor: 'pointer', width: '14px', height: '14px' }}
+                      />
+                    </td>
 
                     {/* Student */}
                     <td>
                       <div className="student-info">
                         <div className="avatar-circle">{initials(student.name)}</div>
                         <div className="student-meta">
-                          <span className="student-name">{student.name}</span>
+                          <span className="student-name" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            {student.name}
+                            {student.isAtRisk && (
+                              <span style={{
+                                background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca',
+                                fontSize: '9px', fontWeight: '800', padding: '2px 8px', borderRadius: '6px',
+                                display: 'inline-block'
+                              }}>
+                                🚨 At-Risk
+                              </span>
+                            )}
+                            {student.isEligibleForCertificate && (
+                              <span style={{
+                                background: '#f0fdf4', color: '#10b981', border: '1px solid #bbf7d0',
+                                fontSize: '9px', fontWeight: '800', padding: '2px 8px', borderRadius: '6px',
+                                display: 'inline-block'
+                              }}>
+                                🎓 Cert Ready
+                              </span>
+                            )}
+                          </span>
                           <small>{student.email || '-'} &bull; {student.batchName || '-'}</small>
                         </div>
                       </div>
@@ -1842,6 +2190,142 @@ const ReportsTab = () => {
         </div>
       </div>
 
+      {/* ✉️ Bulk Email Reminder Simulation Modal */}
+      {reminderModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff', borderRadius: '20px', maxWidth: '580px', width: '100%',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.3)', overflow: 'hidden',
+            display: 'flex', flexDirection: 'column'
+          }}>
+            {reminderModal.stage === 'draft' && (
+              <>
+                <div style={{ background: '#1e3a5f', padding: '20px', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: '15px', fontWeight: '800' }}>✉️ Bulk Reminder Draft</h3>
+                  <button onClick={() => setReminderModal(null)} style={{ background: 'none', border: 'none', color: '#ffffff', fontSize: '18px', cursor: 'pointer' }}>×</button>
+                </div>
+                <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Recipients</span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', maxHeight: '70px', overflowY: 'auto', border: '1px solid #e2e8f0', padding: '8px', borderRadius: '8px' }}>
+                      {reminderModal.students.map(s => (
+                        <span key={s.id} style={{ fontSize: '11px', background: '#f1f5f9', color: '#334155', padding: '2px 8px', borderRadius: '20px', fontWeight: '600' }}>
+                          {s.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Subject</span>
+                    <input
+                      type="text"
+                      readOnly
+                      value="Action Required: Pending Assignments Reminder — Netwisdome"
+                      style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px', fontWeight: '700', color: '#1e293b' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', textTransform: 'uppercase' }}>Message Body</span>
+                    <div style={{
+                      padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0',
+                      fontSize: '12.5px', color: '#334155', background: '#fafbfc', lineHeight: '1.5',
+                      height: '140px', overflowY: 'auto'
+                    }}>
+                      <p>Dear student,</p>
+                      <p style={{ marginTop: '8px' }}>This is an automated reminder from your Netwisdome LMS administrator regarding your pending assignments. We noticed you have pending submissions that require your attention to maintain passing scores.</p>
+                      <p style={{ marginTop: '8px' }}>Please log in to your dashboard and complete your tasks as soon as possible.</p>
+                      <p style={{ marginTop: '12px' }}>Best regards,<br/><strong>Netwisdome LMS Admin</strong></p>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ padding: '16px 24px', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button onClick={() => setReminderModal(null)} style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '12px', fontWeight: '700', background: 'none', border: '1px solid #cbd5e1', cursor: 'pointer' }}>Cancel</button>
+                  <button
+                    onClick={async () => {
+                      setReminderModal({ ...reminderModal, stage: 'sending' });
+                      try {
+                        const payload = {
+                          students: reminderModal.students.map(s => ({ email: s.email, name: s.name })),
+                          subject: "Action Required: Pending Assignments Reminder — Netwisdome",
+                          body: `Dear student,
+
+This is an automated reminder from your Netwisdome LMS administrator regarding your pending assignments. We noticed you have pending submissions that require your attention to maintain passing scores.
+
+Please log in to your dashboard and complete your tasks as soon as possible.
+
+Best regards,
+Netwisdome LMS Admin`
+                        };
+                        const res = await axios.post(`${API_BASE}/api/assignments/send-reminder-email`, payload);
+                        setReminderModal({
+                          ...reminderModal,
+                          stage: 'sent',
+                          resultMessage: res.data?.message || 'Emails sent successfully!'
+                        });
+                      } catch (err) {
+                        console.error("Failed to send reminders:", err);
+                        setReminderModal({
+                          ...reminderModal,
+                          stage: 'error',
+                          errorMessage: err.response?.data?.message || err.message || 'Failed to dispatch email reminders.'
+                        });
+                      }
+                    }}
+                    style={{ padding: '8px 20px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', background: '#ff6b00', color: '#ffffff', border: 'none', cursor: 'pointer' }}
+                  >
+                    🚀 Send Reminders
+                  </button>
+                </div>
+              </>
+            )}
+
+            {reminderModal.stage === 'sending' && (
+              <div style={{ padding: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <span className="spinner" style={{ width: '40px', height: '40px', borderColor: '#ff6b00', borderTopColor: 'transparent', borderRadius: '50%', borderStyle: 'solid', borderWidth: '3px', animation: 'spin 1s linear infinite' }} />
+                <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>Sending reminders...</h3>
+                <p style={{ fontSize: '12px', color: '#64748b' }}>Dispatching actual reminder emails to {reminderModal.students.length} students...</p>
+              </div>
+            )}
+
+            {reminderModal.stage === 'sent' && (
+              <div style={{ padding: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#15803d', fontSize: '24px' }}>✓</div>
+                <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: '16px', fontWeight: '800', color: '#15803d' }}>Emails Sent Successfully!</h3>
+                <p style={{ fontSize: '12px', color: '#64748b' }}>{reminderModal.resultMessage || `${reminderModal.students.length} students have been notified of their pending tasks.`}</p>
+                <button
+                  onClick={() => {
+                    setReminderModal(null);
+                    setSelectedStudents([]);
+                    showToast('Reminders dispatched successfully!');
+                  }}
+                  style={{ marginTop: '10px', padding: '8px 24px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', background: '#1e3a5f', color: '#ffffff', border: 'none', cursor: 'pointer' }}
+                >
+                  Done
+                </button>
+              </div>
+            )}
+
+            {reminderModal.stage === 'error' && (
+              <div style={{ padding: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', fontSize: '24px' }}>✕</div>
+                <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: '16px', fontWeight: '800', color: '#ef4444' }}>Email Dispatch Failed</h3>
+                <p style={{ fontSize: '12px', color: '#64748b' }}>{reminderModal.errorMessage || 'Please verify your SMTP configurations in your backend .env file.'}</p>
+                <button
+                  onClick={() => setReminderModal({ ...reminderModal, stage: 'draft' })}
+                  style={{ marginTop: '10px', padding: '8px 24px', borderRadius: '8px', fontSize: '12px', fontWeight: '800', background: '#ff6b00', color: '#ffffff', border: 'none', cursor: 'pointer' }}
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

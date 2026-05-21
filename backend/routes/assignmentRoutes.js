@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { createAssignment, getAssignments, deleteAssignment } = require('../controllers/assignmentController');
+const { createAssignment, getAssignments, deleteAssignment, sendReminderEmails } = require('../controllers/assignmentController');
 const { submitAssignment, getSubmissions, evaluateSubmission, getSubmissionStatus, deleteSubmission } = require('../controllers/submissionController'); 
 
 // --- Assignment Routes ---
 router.post('/create', createAssignment);
 router.get('/all', getAssignments);
 router.delete('/:id', deleteAssignment);
+router.post('/send-reminder-email', sendReminderEmails);
 
 // --- Submission Routes ---
 router.post('/submit', submitAssignment); // Student साठी सबमिट करणे
