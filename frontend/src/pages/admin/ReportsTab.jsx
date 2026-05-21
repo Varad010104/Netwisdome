@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   FileDown, FileSpreadsheet, Filter, Search,
   DownloadCloud, Calendar, FileBarChart2
@@ -320,6 +320,7 @@ const FONT_LINK = `
 ══════════════════════════════════════════════════════════ */
 const ReportsTab = () => {
   const [reportData,      setReportData]      = useState([]);
+  const [students,        setStudents]        = useState([]);
   const [loading,         setLoading]         = useState(true);
   const [searchTerm,      setSearchTerm]      = useState('');
   const [dateFilter,      setDateFilter]      = useState('7');
@@ -360,6 +361,8 @@ const ReportsTab = () => {
               []
             )
             : [];
+
+        setStudents(students);
 
         const submissions =
           submissionsRes.status === 'fulfilled' && Array.isArray(submissionsRes.value?.data)
@@ -434,6 +437,22 @@ const ReportsTab = () => {
     ...new Set(reportData.map((r) => String(r.batchName || '').trim()).filter(Boolean)),
   ], [reportData]);
 
+  const filteredStudentsForReport = useMemo(() => {
+    return students.filter((student) => {
+      const studentBatchName = student.batchId?.batchName || student.batchName || '-';
+      if (batchFilter !== 'all' && studentBatchName !== batchFilter) return false;
+      
+      const q = searchTerm.trim().toLowerCase();
+      if (q) {
+        const nameMatch = (student.name || '').toLowerCase().includes(q);
+        const emailMatch = (student.email || '').toLowerCase().includes(q);
+        const batchMatch = (studentBatchName).toLowerCase().includes(q);
+        if (!nameMatch && !emailMatch && !batchMatch) return false;
+      }
+      return true;
+    });
+  }, [students, batchFilter, searchTerm]);
+
   const monthOptions = useMemo(() => [
     ...new Set(reportData.map((r) => r.date?.toLocaleString('en-US', { month: 'long' })).filter(Boolean)),
   ], [reportData]);
@@ -507,6 +526,324 @@ const ReportsTab = () => {
       : '0.0';
     return { total, completed, pending, avgScore };
   }, [filteredData]);
+
+  /* ══════════════════════════════════════════════════════
+     EXPORT: STUDENT DIRECTORY PDF (New!)
+  ══════════════════════════════════════════════════════ */
+  const handleExportStudentDirectoryPdf = () => {
+    if (filteredStudentsForReport.length === 0) {
+      showToast('No student records to export.', 'error');
+      return;
+    }
+    
+    try {
+      const win = window.open('', '_blank');
+      if (!win) {
+        showToast('Popup blocked. Allow popups and try again.', 'error');
+        return;
+      }
+
+      const selectedBatchName = batchFilter === 'all' ? 'All Batches' : batchFilter;
+      const totalStudents = filteredStudentsForReport.length;
+
+      const tableRows = filteredStudentsForReport.map((student, i) => {
+        const batchName = student.batchId?.batchName || student.batchName || '-';
+        const joinedDate = student.createdAt 
+          ? new Date(student.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
+          : '-';
+
+        return `<tr style="background:${i % 2 === 0 ? '#fff' : '#f8fafc'}">
+          <td style="text-align:center;color:#94a3b8;font-size:8.5pt;font-weight:700;padding:10px 8px;">${i + 1}</td>
+          <td style="font-weight:700;color:#1e293b;font-size:9pt;padding:10px 8px;">${esc(safe(student.name, 'Student'))}</td>
+          <td style="color:#475569;font-size:8.5pt;padding:10px 8px;word-break:break-all;">${esc(safe(student.email))}</td>
+          <td style="color:#475569;font-size:8.5pt;padding:10px 8px;">${esc(safe(batchName))}</td>
+          <td style="color:#64748b;font-size:8.5pt;padding:10px 8px;text-align:center;">${esc(safe(joinedDate))}</td>
+          <td style="text-align:center;padding:10px 8px;">
+            <span style="display:inline-block;padding:3px 8px;border-radius:20px;font-size:8pt;font-weight:700;
+              background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;
+              print-color-adjust:exact;-webkit-print-color-adjust:exact;">Active</span>
+          </td>
+        </tr>`;
+      }).join('');
+
+      win.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Student Directory Report — Netwisdome</title>
+  ${FONT_LINK}
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 14px; }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: #f0f4f8;
+      color: #0f172a;
+      padding: 28px 24px 56px;
+    }
+    .page { max-width: 900px; margin: 0 auto; }
+
+    /* Brand bar */
+    .brand-bar { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .brand-logo {
+      width:32px; height:32px; border-radius:8px; flex-shrink:0;
+      background:linear-gradient(135deg,#1e3a5f 0%,#ff6b00 100%);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Sora',sans-serif; font-size:12px; font-weight:800; color:#fff;
+    }
+    .brand-name {
+      font-family:'Sora',sans-serif; font-size:15px; font-weight:800;
+      background:linear-gradient(100deg,#1e3a5f 0%,#ff6b00 110%);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .brand-sub { margin-left:auto; font-size:11px; font-weight:600; color:#64748b; }
+
+    /* Hero */
+    .hero {
+      background:linear-gradient(135deg,#0f1f3a 0%,#1e3a5f 60%,#0b2a4a 100%);
+      border-radius:16px; padding:24px 28px; margin-bottom:16px;
+      box-shadow:0 6px 24px rgba(15,31,58,.25); position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; top:-50px; right:-50px;
+      width:200px; height:200px; border-radius:50%;
+      background:radial-gradient(circle,rgba(255,107,0,.18) 0%,transparent 70%);
+    }
+    .hero-inner { display:flex; justify-content:space-between; align-items:center; position:relative; z-index:1; }
+    .hero-left h1 { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:#fff; letter-spacing:-.3px; margin-bottom:5px; }
+    .hero-left p  { font-size:12px; color:rgba(255,255,255,.5); font-weight:500; }
+    
+    .hero-stats { display:flex; gap:10px; }
+    .hstat {
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+      border-radius:11px; padding:12px 20px; text-align:center; min-width:100px; backdrop-filter:blur(6px);
+    }
+    .hstat-val { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:#fff; line-height:1; }
+    .hstat-lbl { font-size:10px; font-weight:600; color:rgba(255,255,255,.40); margin-top:4px; }
+
+    /* Table card */
+    .table-card { background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 3px 14px rgba(2,6,23,.07); }
+    .table-header-bar { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #f1f5f9; }
+    .table-header-bar h2 { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; color:#0f172a; }
+    .table-header-bar span { font-size:11px; color:#94a3b8; font-weight:600; }
+
+    /* Table */
+    table { border-collapse:collapse; width:100%; }
+    thead tr { background:linear-gradient(90deg,#0f1f3a 0%,#1a3259 100%); }
+    thead th {
+      font-family:'Sora',sans-serif; font-size:9.5pt; font-weight:700;
+      color:rgba(255,255,255,.8); text-transform:uppercase; letter-spacing:.5px;
+      padding:12px 10px; text-align:left;
+    }
+    tbody tr { border-bottom:1px solid #f1f5f9; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody td { padding:10px; font-size:13px; color:#334155; vertical-align:middle; }
+
+    /* Column widths */
+    th:nth-child(1), td:nth-child(1) { width: 50px; text-align:center; }
+    th:nth-child(2), td:nth-child(2) { width: 220px; }
+    th:nth-child(3), td:nth-child(3) { width: 260px; }
+    th:nth-child(4), td:nth-child(4) { width: 200px; }
+    th:nth-child(5), td:nth-child(5) { width: 130px; text-align:center; }
+    th:nth-child(6), td:nth-child(6) { width: 100px; text-align:center; }
+
+    /* Actions */
+    .action-bar { display:flex; gap:10px; justify-content:flex-end; padding:12px 24px 0; }
+    .btn-print {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:8px 20px; border-radius:8px;
+      background:linear-gradient(135deg,#0f1f3a 0%,#1e3a5f 100%);
+      color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer;
+      font-family:'Manrope',sans-serif; box-shadow:0 3px 10px rgba(15,31,58,.20);
+    }
+    .report-footer { margin-top:20px; text-align:center; font-size:11px; color:#94a3b8; font-weight:500; }
+
+    @media print {
+      body { background: #fff !important; padding: 0; }
+      .action-bar { display: none !important; }
+      .table-card { box-shadow: none; border: 1px solid #e2e8f0; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="brand-bar">
+    <div class="brand-logo">N</div>
+    <span class="brand-name">Netwisdome</span>
+    <span class="brand-sub">Learning Management System</span>
+  </div>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <h1>Student Directory Report</h1>
+        <p>Batch: ${esc(selectedBatchName)} &nbsp;·&nbsp; Generated: ${esc(exportDate)}</p>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="hstat-val">${totalStudents}</div>
+          <div class="hstat-lbl">Total Students</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn-print" onclick="window.print()">🖨 Print / Save as PDF</button>
+  </div>
+
+  <div class="table-card" style="margin-top: 15px;">
+    <div class="table-header-bar">
+      <h2>Student Roster</h2>
+      <span>${totalStudents} active accounts</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Sr No</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Batch</th>
+            <th style="text-align:center;">Joined On</th>
+            <th style="text-align:center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>${tableRows || '<tr><td colspan="6" style="text-align:center;padding:36px;color:#94a3b8;">No student records found.</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="report-footer">
+    Netwisdome LMS &nbsp;·&nbsp; Batch Directory Report &nbsp;·&nbsp; ${esc(exportDate)}
+  </div>
+</div>
+</body>
+</html>`);
+      win.document.close();
+      win.focus();
+      showToast('PDF report opened — use Print / Save as PDF');
+    } catch (err) {
+      console.error('PDF student directory export error:', err);
+      showToast('PDF export failed. Please try again.', 'error');
+    }
+  };
+
+  /* ══════════════════════════════════════════════════════
+     EXPORT: STUDENT DIRECTORY EXCEL (New!)
+  ══════════════════════════════════════════════════════ */
+  const handleExportStudentDirectoryExcel = async () => {
+    if (filteredStudentsForReport.length === 0) {
+      showToast('No student records to export.', 'error');
+      return;
+    }
+
+    try {
+      const XLSX = await import('xlsx').catch(() => null);
+      if (!XLSX) {
+        showToast('xlsx package not found. Run: npm install xlsx', 'error');
+        return;
+      }
+
+      const encode = XLSX.utils.encode_cell;
+      const setCell = (ws, row, col, value, style) => {
+        const addr = encode({ r: row, c: col });
+        ws[addr] = xlCell(value, style);
+      };
+
+      const ws = {};
+      const COLS = 6;
+      let R = 0;
+
+      const selectedBatchName = batchFilter === 'all' ? 'All Batches' : batchFilter;
+
+      /* Row 0 — Main title (merged) */
+      setCell(ws, R, 0, 'Netwisdome Learning Management System', xlStyles.title());
+      for (let c = 1; c < COLS; c++) setCell(ws, R, c, '', xlStyles.title());
+      R++;
+
+      /* Row 1 — Sub-title */
+      setCell(ws, R, 0, `Student Batch Directory - ${selectedBatchName}`, xlStyles.subtitle());
+      for (let c = 1; c < COLS; c++) setCell(ws, R, c, '', xlStyles.subtitle());
+      R++;
+
+      /* Row 2 — Generated date */
+      setCell(ws, R, 0, `Generated: ${exportDate} | Total Students: ${filteredStudentsForReport.length}`, xlStyles.metaLabel());
+      for (let c = 1; c < COLS; c++) setCell(ws, R, c, '', xlStyles.metaLabel());
+      R++;
+
+      /* Row 3 — Spacer */
+      for (let c = 0; c < COLS; c++) setCell(ws, R, c, '', { fill: { fgColor: { rgb: 'FFFFFFFF' }, patternType: 'solid' } });
+      R++;
+
+      /* Row 4 — Column headers */
+      const headers = ['Sr No', 'Student Name', 'Email Address', 'Assigned Batch', 'Registration Date', 'Status'];
+      headers.forEach((h, c) => setCell(ws, R, c, h, xlStyles.header()));
+      const headerRow = R;
+      R++;
+
+      /* Rows 5+ — Data */
+      filteredStudentsForReport.forEach((student, i) => {
+        const shade = i % 2 === 1;
+        const batchName = student.batchId?.batchName || student.batchName || '-';
+        const joinedDate = student.createdAt 
+          ? new Date(student.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
+          : '-';
+
+        setCell(ws, R, 0, i + 1, xlStyles.cellCenter(shade));
+        setCell(ws, R, 1, safe(student.name, 'Student'), xlStyles.cell(shade));
+        setCell(ws, R, 2, safe(student.email), xlStyles.cell(shade));
+        setCell(ws, R, 3, safe(batchName), xlStyles.cell(shade));
+        setCell(ws, R, 4, safe(joinedDate), xlStyles.cellCenter(shade));
+        setCell(ws, R, 5, 'Active', xlStyles.cellCenter(shade));
+        R++;
+      });
+
+      /* ws range */
+      ws['!ref'] = `A1:${XLSX.utils.encode_cell({ r: R - 1, c: COLS - 1 })}`;
+
+      /* Merges */
+      ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: COLS - 1 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: COLS - 1 } },
+        { s: { r: 2, c: 0 }, e: { r: 2, c: COLS - 1 } },
+      ];
+
+      /* Column widths */
+      ws['!cols'] = [
+        { wch: 8 },   // Sr No
+        { wch: 28 },  // Student Name
+        { wch: 34 },  // Email
+        { wch: 26 },  // Batch
+        { wch: 18 },  // Date
+        { wch: 14 },  // Status
+      ];
+
+      /* Row heights */
+      ws['!rows'] = Array.from({ length: R }, (_, i) => {
+        if (i < 3) return { hpt: i === 0 ? 32 : 22 };
+        if (i === headerRow) return { hpt: 24 };
+        return { hpt: 18 };
+      });
+
+      /* Freeze pane on header */
+      ws['!freeze'] = { xSplit: 0, ySplit: headerRow + 1, topLeftCell: `A${headerRow + 2}`, activeCell: `A${headerRow + 2}`, sqref: `A${headerRow + 2}` };
+
+      /* Auto-filter */
+      ws['!autofilter'] = { ref: `A${headerRow + 1}:F${R}` };
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Student Directory');
+
+      const safeBatchName = selectedBatchName.replace(/[^a-zA-Z0-9]/g, '_');
+      XLSX.writeFile(wb, `Student_Directory_${safeBatchName}.xlsx`);
+      showToast('Excel report downloaded successfully!');
+    } catch (err) {
+      console.error('Excel student directory export error:', err);
+      showToast('Excel export failed. Please try again.', 'error');
+    }
+  };
 
   /* ══════════════════════════════════════════════════════
      EXPORT: TOTAL REPORT PDF
@@ -1302,19 +1639,37 @@ const ReportsTab = () => {
             className={`export-pill pdf ${exportingPdf ? 'exporting' : ''}`}
             onClick={handleExportPdf}
             disabled={filteredData.length === 0 || exportingPdf}
+            title="Export Performance Report to PDF"
           >
             {exportingPdf
               ? <><span className="spinner" /> Generating…</>
-              : <><FileDown size={16} /> Export PDF</>}
+              : <><FileDown size={16} /> Submissions PDF</>}
           </button>
           <button
             className={`export-pill excel ${exportingExcel ? 'exporting' : ''}`}
             onClick={handleExportExcel}
             disabled={filteredData.length === 0 || exportingExcel}
+            title="Export Performance Report to Excel"
           >
             {exportingExcel
               ? <><span className="spinner" /> Exporting…</>
-              : <><FileSpreadsheet size={16} /> Export Excel</>}
+              : <><FileSpreadsheet size={16} /> Submissions Excel</>}
+          </button>
+          <button
+            className="export-pill pdf secondary-pill"
+            style={{ background: 'linear-gradient(135deg, #475569 0%, #334155 100%)', borderColor: '#475569', color: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            onClick={handleExportStudentDirectoryPdf}
+            title="Download Student Directory Roster (PDF)"
+          >
+            <FileDown size={16} /> Students PDF
+          </button>
+          <button
+            className="export-pill excel secondary-pill"
+            style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', borderColor: '#0284c7', color: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            onClick={handleExportStudentDirectoryExcel}
+            title="Download Student Directory Roster (Excel)"
+          >
+            <FileSpreadsheet size={16} /> Students Excel
           </button>
         </div>
       </div>
