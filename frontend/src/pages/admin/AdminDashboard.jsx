@@ -8,6 +8,7 @@ import EvaluationTab from './EvaluationTab';
 import ReportsTab from './ReportsTab';
 import AddCourse from './addcourse';
 import Attendance from './Attendance';
+import NotesManager from './NotesManager';
 import Footer from '../../components/common/footer';
 import './AdminDashboard.css';
 
@@ -40,6 +41,7 @@ const AdminDashboard = () => {
           {activeTab === 'attendance' && <Attendance />}
           {activeTab === 'students' && <StudentsTab />}
           {activeTab === 'course' && <AddCourse />}
+          {activeTab === 'notes' && <NotesManager />}
           {activeTab === 'create' && <CreateAssignmentTab />}
           {activeTab === 'evaluation' && <EvaluationTab />}
           {activeTab === 'reports' && <ReportsTab />}

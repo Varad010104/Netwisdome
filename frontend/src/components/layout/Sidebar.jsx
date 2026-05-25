@@ -3,6 +3,7 @@ import "./Sidebar.css";
 import { 
   LayoutGrid, 
   BookOpen, 
+  Notebook,
   Rocket, 
   Award, 
   Menu, 
@@ -16,6 +17,7 @@ const Sidebar = ({ setActivePage, activePage }) => {
   const menuItems = [
     { icon: <LayoutGrid size={20} />, label: "Dashboard" },
     { icon: <BookOpen size={20} />, label: "My Courses" },
+    { icon: <Notebook size={20} />, label: "Learning Notes" },
     { icon: <Rocket size={20} />, label: "Statsboard" },
     { icon: <Award size={20} />, label: "Certificates" },
   ];

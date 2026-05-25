@@ -1,0 +1,470 @@
+.learning-notes-dashboard {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 100px);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  background: #f8fafc;
+  animation: fadeInContainer 0.4s ease-out;
+}
+
+@keyframes fadeInContainer {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile header */
+.student-notes-mobile-header {
+  display: none;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  padding: 12px 16px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 6px -1px rgba(148, 163, 184, 0.03);
+}
+
+.mobile-back-btn {
+  background: #fff8f5;
+  border: 1px solid #ffdecb;
+  color: #f76707;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.mobile-back-btn:hover {
+  background: #ffe8db;
+}
+
+.mobile-active-course-tag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  max-width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Split Pane Grid Layout */
+.notes-split-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar Explorer left */
+.lms-sidebar-explorer {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  box-shadow: 0 4px 6px -1px rgba(148, 163, 184, 0.03);
+}
+
+.explorer-header {
+  padding: 20px 20px 12px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.badge-lms-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  color: #1e4ed8;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.explorer-header h3 {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.batch-name-subtitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f76707;
+  margin: 4px 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.explorer-search {
+  padding: 12px 20px;
+  position: relative;
+}
+
+.explorer-search .search-icon-inside {
+  position: absolute;
+  left: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.explorer-search .search-input-field {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 9px 12px 9px 38px;
+  font-size: 13px;
+  outline: none;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.explorer-search .search-input-field:focus {
+  border-color: #f76707;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(247, 103, 7, 0.08);
+}
+
+.course-filter-select-wrap {
+  padding: 0 20px 12px 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.filter-select-icon {
+  position: absolute;
+  left: 32px;
+  color: #64748b;
+}
+
+.course-select-field {
+  width: 100%;
+  height: 38px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding-left: 34px;
+  padding-right: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  transition: all 0.2s ease;
+}
+
+.course-select-field:focus {
+  border-color: #f76707;
+  background: #ffffff;
+}
+
+/* Accordion Topics Explorer */
+.explorer-accordion-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Scrollbar */
+.explorer-accordion-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.explorer-accordion-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.explorer-accordion-list::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+.sidebar-course-group {
+  margin-bottom: 12px;
+}
+
+.sidebar-course-title-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-topic-accordion-node {
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.topic-node-header {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  background: #ffffff;
+  transition: background 0.2s ease;
+}
+
+.topic-node-header:hover {
+  background: #f8fafc;
+}
+
+.topic-node-header.expanded {
+  background: #fbfcfd;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.topic-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  overflow: hidden;
+  max-width: 85%;
+}
+
+.topic-header-title span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topic-lessons-badge {
+  font-size: 9px;
+  font-weight: 800;
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 2px 6px;
+  border-radius: 99px;
+}
+
+.topic-lessons-leaves-list {
+  padding: 6px 10px;
+  background: #fbfcfd;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lesson-leaf-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.lesson-leaf-btn:hover {
+  background: #f1f5f9;
+}
+
+.lesson-leaf-btn.active {
+  background: #eff6ff;
+}
+
+.active-dot-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.lesson-leaf-btn.active .active-dot-indicator {
+  background: #1e4ed8;
+  box-shadow: 0 0 8px rgba(30, 78, 216, 0.5);
+}
+
+.leaf-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lesson-leaf-btn.active .leaf-label {
+  color: #1e4ed8;
+  font-weight: 700;
+}
+
+/* Right Content panel */
+.lms-content-viewer-panel {
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Skeletons */
+.sidebar-skeleton-loader {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sk-bar {
+  height: 38px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.viewer-skeleton-wrap {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+
+.sk-banner {
+  height: 200px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.sk-title {
+  height: 30px;
+  width: 60%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.sk-text {
+  height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.sidebar-error-text {
+  font-size: 12px;
+  color: #e11d48;
+  font-weight: 600;
+  text-align: center;
+}
+
+.sidebar-empty-state {
+  color: #94a3b8;
+  font-size: 11px;
+  font-style: italic;
+  padding: 20px 0;
+}
+
+/* Responsiveness settings */
+@media (max-width: 992px) {
+  .notes-split-layout {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .learning-notes-dashboard {
+    height: calc(100vh - 80px);
+    min-height: auto;
+    padding: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .student-notes-mobile-header {
+    display: flex;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+  }
+
+  .notes-split-layout {
+    grid-template-columns: 1fr;
+    flex: 1;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .lms-sidebar-explorer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background: #ffffff;
+    display: none;
+    border-radius: 12px;
+  }
+
+  .lms-sidebar-explorer.open {
+    display: flex;
+  }
+
+  .lms-content-viewer-panel {
+    display: block;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .lms-sidebar-explorer.open + .lms-content-viewer-panel {
+    display: none;
+  }
+}

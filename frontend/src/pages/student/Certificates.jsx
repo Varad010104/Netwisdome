@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { Lock } from 'lucide-react';
 import './certificate.css';
 import { getStoredUserInfo } from '../../utils/userInfo';
 
@@ -130,23 +131,38 @@ const Certificate = () => {
     pdf.save(`${studentName}_Certificate.pdf`);
   };
 
-  return (
-    <div className={`layout-container ${isIssued ? 'has-download' : 'locked-center'}`}>
-      {isIssued && (
-        <div className="sidebar-left">
-          <button className="download-btn" onClick={downloadCertificate}>
-            Download Certificate
-          </button>
-        </div>
-      )}
-      <div className={`cert-wrapper ${isIssued ? '' : 'locked'}`} ref={certificateRef}>
-        <div className="cert-card">
-          {!isIssued && (
-            <div className="certificate-lock">
-              <div className="lock-badge">Locked</div>
-              <p>Contact Institute to unlock your certificate.</p>
+  // Secure conditional render: If locked, render ONLY the lock page. No certificate DOM exists.
+  if (!isIssued) {
+    return (
+      <div className="layout-container locked-center">
+        <div className="cert-lock-screen">
+          <div className="cert-lock-card">
+            <div className="lock-icon-wrapper">
+              <Lock size={36} />
             </div>
-          )}
+            <h2>Certificate Locked</h2>
+            <p className="lock-description">
+              Your Master in Automotive Domain certificate has not been issued yet. 
+              Please complete all syllabus requirements and contact your training institute to unlock it.
+            </p>
+            <div className="contact-info">
+              <span>Support: contact@netwisdome.com</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="layout-container has-download">
+      <div className="sidebar-left">
+        <button className="download-btn" onClick={downloadCertificate}>
+          Download Certificate
+        </button>
+      </div>
+      <div className="cert-wrapper" ref={certificateRef}>
+        <div className="cert-card">
           <div className="corner top-left-navy"></div>
           <div className="corner top-left-gold"></div>
           <div className="corner top-right-navy"></div>
@@ -208,7 +224,6 @@ const Certificate = () => {
           <div className="corner bottom-navy-bar"></div>
         </div>
       </div>
-
     </div>
   );
 };

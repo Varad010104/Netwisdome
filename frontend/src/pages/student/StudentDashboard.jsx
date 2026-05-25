@@ -12,6 +12,7 @@ import Leaderboard from "./Leaderboard";
 import AssignedAssignments from "./AssignedAssignments";
 import Certificates from "./Certificates";
 import MyCourses from "./MyCourses";
+import LearningNotes from "./LearningNotes";
 import { getStoredUserInfo } from "../../utils/userInfo";
 
 const StudentDashboard = () => {
@@ -79,73 +80,84 @@ const StudentDashboard = () => {
       {/* CENTER CONTENT AREA */}
       <div className="dashboard-content-scrollable">
         {/* Header */}
-        <div style={{ padding: '24px 24px 8px 24px', flexShrink: 0 }}>
-          <div className="premium-header-row" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottom: '1px solid #e9ecef',
-            paddingBottom: '8px'
-          }}>
-            <div>
-              <h1 style={{ margin: 0, fontSize: '26px', fontWeight: '800', color: '#1e293b' }}>
-                Hello, <span style={{ color: '#f76707' }}>{user.name}!</span>
-              </h1>
-            </div>
-
-            <div style={{
+        {activePage !== "Learning Notes" && (
+          <div style={{ padding: '24px 24px 8px 24px', flexShrink: 0 }}>
+            <div className="premium-header-row" style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              background: '#fff5f0',
-              padding: '6px 16px',
-              borderRadius: '10px',
-              border: '1px solid #ffdecb'
+              justifyContent: 'space-between',
+              borderBottom: '1px solid #e9ecef',
+              paddingBottom: '8px'
             }}>
-              <span style={{ color: '#f76707', fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Batch: {user.batchName}
-              </span>
+              <div>
+                <h1 style={{ margin: 0, fontSize: '26px', fontWeight: '800', color: '#1e293b' }}>
+                  Hello, <span style={{ color: '#f76707' }}>{user.name}!</span>
+                </h1>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: '#fff5f0',
+                padding: '6px 16px',
+                borderRadius: '10px',
+                border: '1px solid #ffdecb'
+              }}>
+                <span style={{ color: '#f76707', fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Batch: {user.batchName}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* SCROLLABLE CONTENT */}
-        <div className="dashboard-content-inner" style={{ flex: 1, overflowY: 'auto', padding: '12px 24px' }}>
-          {activePage === "Dashboard" && (
-            <>
-              <div className="dashboard-assessment-btn-wrap">
-                <button className="dashboard-assessment-btn" onClick={() => navigate("/student/all-assessments")}>
-                  View all Assesment
-                </button>
-              </div>
-              <AssignedAssignments refreshKey={dataRefresh} />
-              <ProgressCard />
-              <Assignments refreshKey={dataRefresh} />
-            </>
-          )}
+        {activePage === "Learning Notes" ? (
+          <LearningNotes />
+        ) : (
+          <div className="dashboard-content-inner" style={{ flex: 1, overflowY: 'auto', padding: '12px 24px' }}>
+            {activePage === "Dashboard" && (
+              <>
+                <div className="dashboard-assessment-btn-wrap">
+                  <button className="dashboard-assessment-btn" onClick={() => navigate("/student/all-assessments")}>
+                    View all Assesment
+                  </button>
+                </div>
+                <AssignedAssignments refreshKey={dataRefresh} />
+                <ProgressCard />
+                <Assignments refreshKey={dataRefresh} />
+              </>
+            )}
 
-          {activePage === "Certificates" && (
-            <Certificates />
-          )}
+            {activePage === "Certificates" && (
+              <Certificates />
+            )}
 
-          {activePage === "My Courses" && (
-            <MyCourses onStartAssessment={() => setActivePage("Dashboard")} />
-          )}
+            {activePage === "My Courses" && (
+              <MyCourses onStartAssessment={() => setActivePage("Dashboard")} />
+            )}
 
-          {activePage === "Statsboard" && (
-            <Leaderboard currentBatchName={user.batchName} />
-          )}
-        </div>
-        <div style={{ marginTop: 'auto', flexShrink: 0 }}>
-          <Footer />
-        </div>
+            {activePage === "Statsboard" && (
+              <Leaderboard currentBatchName={user.batchName} />
+            )}
+          </div>
+        )}
+
+        {activePage !== "Learning Notes" && (
+          <div style={{ marginTop: 'auto', flexShrink: 0 }}>
+            <Footer />
+          </div>
+        )}
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="dashboard-right-fixed">
-        <LearningStreak studentId={user.studentId} batchName={user.batchName} />
-        <Leaderboard currentBatchName={user.batchName} />
-      </div>
+      {activePage !== "Learning Notes" && (
+        <div className="dashboard-right-fixed">
+          <LearningStreak studentId={user.studentId} batchName={user.batchName} />
+          <Leaderboard currentBatchName={user.batchName} />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './addcourse.css';
-import { Upload, Trash2, BookOpenCheck, PlusCircle } from 'lucide-react';
+import { Upload, Trash2, PlusCircle, BookOpenCheck } from 'lucide-react';
 
 const AddCourse = () => {
     const API_BASE = 'http://localhost:5055';

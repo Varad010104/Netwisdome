@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, Users, PlusCircle, 
-  CheckSquare, BarChart3, LogOut, Menu, X 
+  CheckSquare, BarChart3, LogOut, Menu, X,
+  BookOpen
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -13,6 +14,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'attendance', label: 'Attendance', icon: <CheckSquare size={20} /> },
     { id: 'students', label: 'Students', icon: <Users size={20} /> },
     { id: 'course', label: 'Course', icon: <PlusCircle size={20} /> },
+    { id: 'notes', label: 'Learning Notes', icon: <BookOpen size={20} /> },
     { id: 'create', label: 'Assignment', icon: <PlusCircle size={20} /> },
     { id: 'evaluation', label: 'Evaluation', icon: <CheckSquare size={20} /> },
     { id: 'reports', label: 'Reports', icon: <BarChart3 size={20} /> },

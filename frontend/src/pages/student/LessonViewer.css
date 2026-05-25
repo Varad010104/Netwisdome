@@ -1,0 +1,481 @@
+.lms-lesson-viewer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.viewer-empty-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px dashed #cbd5e1;
+}
+
+.viewer-empty-card {
+  max-width: 440px;
+}
+
+.empty-icon-bounce {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #fff5f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f76707;
+  margin: 0 auto 20px auto;
+  border: 1px solid #ffdecb;
+  animation: bounceSlow 3s infinite ease-in-out;
+}
+
+@keyframes bounceSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.viewer-empty-card h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.viewer-empty-card p {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Header bar inside viewer */
+.viewer-top-action-bar {
+  padding: 16px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .viewer-top-action-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.topic-breadcrumb {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.viewer-action-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.viewer-action-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.viewer-action-btn.bookmarked {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.viewer-action-btn.complete-btn.completed {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #a7f3d0;
+}
+
+/* Scroll Content */
+.viewer-scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Scrollbar */
+.viewer-scroll-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.viewer-scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.viewer-scroll-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+
+/* Banner */
+.viewer-banner-media {
+  height: 220px;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.viewer-banner-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.banner-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);
+}
+
+.viewer-banner-fallback {
+  height: 160px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.banner-fallback-icon {
+  color: rgba(255, 255, 255, 0.15);
+  z-index: 2;
+}
+
+.fallback-glow-orb {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: #f76707;
+  filter: blur(50px);
+  border-radius: 50%;
+  opacity: 0.18;
+  z-index: 1;
+}
+
+/* Header */
+.viewer-lesson-header {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
+.topic-context-tag {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #f76707;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+.viewer-lesson-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 6px 0 10px 0;
+  letter-spacing: -0.5px;
+}
+
+.quick-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-stat {
+  font-size: 12px;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.completion-toast-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #ecfdf5;
+  color: #047857;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #a7f3d0;
+  text-transform: uppercase;
+}
+
+/* Descriptions */
+.viewer-description-section h2,
+.viewer-resources-section h2 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.3px;
+}
+
+.lesson-description-text {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* Resources list */
+.student-resources-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.student-resource-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.student-resource-card:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(148, 163, 184, 0.05);
+}
+
+@media (max-width: 640px) {
+  .student-resource-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
+
+.card-left-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  max-width: 70%;
+}
+
+@media (max-width: 640px) {
+  .card-left-info {
+    max-width: 100%;
+  }
+}
+
+.file-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.res-icon.pdf { color: #ef4444; }
+.res-icon.doc { color: #3b82f6; }
+.res-icon.ppt { color: #f59e0b; }
+.res-icon.zip { color: #8b5cf6; }
+.res-icon.default { color: #64748b; }
+
+.file-meta-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.file-meta-text h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  margin: 0 0 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-meta-text span {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.card-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.res-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.res-action-btn.view-btn {
+  background: #ffffff;
+  color: #f76707;
+  border: 1px solid #ffdecb;
+}
+
+.res-action-btn.view-btn:hover {
+  background: #fff8f5;
+  color: #d9480f;
+}
+
+.res-action-btn.download-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 8px;
+}
+
+.res-action-btn.download-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.no-materials-card {
+  padding: 24px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px dashed #cbd5e1;
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* Responsive media queries for all devices */
+@media (max-width: 768px) {
+  .viewer-scroll-content {
+    padding: 16px;
+    gap: 18px;
+  }
+  
+  .viewer-banner-media {
+    height: 160px;
+  }
+
+  .viewer-banner-fallback {
+    height: 130px;
+  }
+
+  .viewer-lesson-title {
+    font-size: 20px;
+    margin: 4px 0 8px 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .viewer-top-action-bar {
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .action-buttons-group {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .viewer-action-btn {
+    justify-content: center;
+    width: 100%;
+    padding: 8px 10px;
+  }
+
+  .student-resource-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .card-left-info {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .card-right-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+  }
+
+  .res-action-btn.view-btn {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .res-action-btn.download-btn {
+    justify-content: center;
+  }
+}

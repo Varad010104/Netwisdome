@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const batchRoutes = require('./routes/batchRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
+const notesRoutes = require('./routes/notesRoutes');
 const { verifySMTPConnection } = require('./utils/mailer');
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use('/api/batches', batchRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api', attendanceRoutes);
+app.use('/api', notesRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is running and Netwisdome Backend is Connected!');

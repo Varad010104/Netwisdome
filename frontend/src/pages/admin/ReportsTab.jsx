@@ -13,22 +13,22 @@ const API_BASE = 'http://localhost:5055';
 
 // Excel theme colours
 const XL = {
-  NAVY_DARK  : 'FF0B1120',
-  NAVY       : 'FF1e3a5f',
-  NAVY_MID   : 'FF1a3259',
-  ORANGE     : 'FFff6b00',
-  WHITE      : 'FFFFFFFF',
-  GRAY_LIGHT : 'FFF8FAFC',
-  GRAY_ALT   : 'FFf1f5f9',
-  GREEN_BG   : 'FFf0fdf4',
-  GREEN_FG   : 'FF15803d',
-  AMBER_BG   : 'FFfffbeb',
-  AMBER_FG   : 'FFb45309',
-  RED_BG     : 'FFfef2f2',
-  RED_FG     : 'FFb91c1c',
-  SCORE_GRN  : 'FF10b981',
-  SCORE_AMB  : 'FFf59e0b',
-  SCORE_RED  : 'FFef4444',
+  NAVY_DARK: 'FF0B1120',
+  NAVY: 'FF1e3a5f',
+  NAVY_MID: 'FF1a3259',
+  ORANGE: 'FFff6b00',
+  WHITE: 'FFFFFFFF',
+  GRAY_LIGHT: 'FFF8FAFC',
+  GRAY_ALT: 'FFf1f5f9',
+  GREEN_BG: 'FFf0fdf4',
+  GREEN_FG: 'FF15803d',
+  AMBER_BG: 'FFfffbeb',
+  AMBER_FG: 'FFb45309',
+  RED_BG: 'FFfef2f2',
+  RED_FG: 'FFb91c1c',
+  SCORE_GRN: 'FF10b981',
+  SCORE_AMB: 'FFf59e0b',
+  SCORE_RED: 'FFef4444',
 };
 
 /* ══════════════════════════════════════════════════════════
@@ -74,8 +74,8 @@ const statusColors = (rawStatus) =>
   rawStatus === 'Complete'
     ? { bg: '#f0fdf4', fg: '#15803d', bd: '#bbf7d0' }
     : rawStatus === 'Pending'
-    ? { bg: '#fffbeb', fg: '#b45309', bd: '#fde68a' }
-    : { bg: '#fef2f2', fg: '#b91c1c', bd: '#fecaca' };
+      ? { bg: '#fffbeb', fg: '#b45309', bd: '#fde68a' }
+      : { bg: '#fef2f2', fg: '#b91c1c', bd: '#fecaca' };
 
 /* ── Excel cell builder ─────────────────────────────────── */
 const xlCell = (v, style) => {
@@ -86,70 +86,70 @@ const xlCell = (v, style) => {
 
 /* ── Excel border spec ──────────────────────────────────── */
 const xlBorder = (color = '000000') => ({
-  top:    { style: 'thin', color: { rgb: color } },
+  top: { style: 'thin', color: { rgb: color } },
   bottom: { style: 'thin', color: { rgb: color } },
-  left:   { style: 'thin', color: { rgb: color } },
-  right:  { style: 'thin', color: { rgb: color } },
+  left: { style: 'thin', color: { rgb: color } },
+  right: { style: 'thin', color: { rgb: color } },
 });
 
 /* ── Excel style factories ──────────────────────────────── */
 const xlStyles = {
   title: () => ({
-    font:      { name: 'Calibri', sz: 18, bold: true, color: { rgb: XL.WHITE } },
-    fill:      { fgColor: { rgb: XL.NAVY_DARK }, patternType: 'solid' },
+    font: { name: 'Calibri', sz: 18, bold: true, color: { rgb: XL.WHITE } },
+    fill: { fgColor: { rgb: XL.NAVY_DARK }, patternType: 'solid' },
     alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
-    border:    xlBorder('1e2d42'),
+    border: xlBorder('1e2d42'),
   }),
   subtitle: () => ({
-    font:      { name: 'Calibri', sz: 12, bold: true, color: { rgb: XL.WHITE } },
-    fill:      { fgColor: { rgb: XL.NAVY }, patternType: 'solid' },
+    font: { name: 'Calibri', sz: 12, bold: true, color: { rgb: XL.WHITE } },
+    fill: { fgColor: { rgb: XL.NAVY }, patternType: 'solid' },
     alignment: { horizontal: 'center', vertical: 'center' },
-    border:    xlBorder('1e2d42'),
+    border: xlBorder('1e2d42'),
   }),
   metaLabel: () => ({
-    font:      { name: 'Calibri', sz: 10, bold: true, color: { rgb: XL.WHITE } },
-    fill:      { fgColor: { rgb: XL.NAVY_MID }, patternType: 'solid' },
+    font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: XL.WHITE } },
+    fill: { fgColor: { rgb: XL.NAVY_MID }, patternType: 'solid' },
     alignment: { horizontal: 'left', vertical: 'center' },
-    border:    xlBorder('1e2d42'),
+    border: xlBorder('1e2d42'),
   }),
   header: () => ({
-    font:      { name: 'Calibri', sz: 10, bold: true, color: { rgb: XL.WHITE } },
-    fill:      { fgColor: { rgb: XL.NAVY }, patternType: 'solid' },
+    font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: XL.WHITE } },
+    fill: { fgColor: { rgb: XL.NAVY }, patternType: 'solid' },
     alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
-    border:    xlBorder('1e2d42'),
+    border: xlBorder('1e2d42'),
   }),
   cell: (shade) => ({
-    font:      { name: 'Calibri', sz: 10, color: { rgb: 'FF1e293b' } },
-    fill:      { fgColor: { rgb: shade ? XL.GRAY_ALT : XL.WHITE }, patternType: 'solid' },
+    font: { name: 'Calibri', sz: 10, color: { rgb: 'FF1e293b' } },
+    fill: { fgColor: { rgb: shade ? XL.GRAY_ALT : XL.WHITE }, patternType: 'solid' },
     alignment: { horizontal: 'left', vertical: 'center', wrapText: true },
-    border:    xlBorder('e2e8f0'),
+    border: xlBorder('e2e8f0'),
   }),
   cellCenter: (shade) => ({
-    font:      { name: 'Calibri', sz: 10, color: { rgb: 'FF1e293b' } },
-    fill:      { fgColor: { rgb: shade ? XL.GRAY_ALT : XL.WHITE }, patternType: 'solid' },
+    font: { name: 'Calibri', sz: 10, color: { rgb: 'FF1e293b' } },
+    fill: { fgColor: { rgb: shade ? XL.GRAY_ALT : XL.WHITE }, patternType: 'solid' },
     alignment: { horizontal: 'center', vertical: 'center' },
-    border:    xlBorder('e2e8f0'),
+    border: xlBorder('e2e8f0'),
   }),
   statusCell: (rawStatus, shade) => {
     const map = {
       Complete: { fgColor: { rgb: 'FFdcfce7' }, fontRgb: XL.GREEN_FG },
-      Pending:  { fgColor: { rgb: 'FFfef9c3' }, fontRgb: XL.AMBER_FG },
+      Pending: { fgColor: { rgb: 'FFfef9c3' }, fontRgb: XL.AMBER_FG },
     };
     const m = map[rawStatus] || { fgColor: { rgb: 'FFffe4e6' }, fontRgb: XL.RED_FG };
     return {
-      font:      { name: 'Calibri', sz: 10, bold: true, color: { rgb: m.fontRgb } },
-      fill:      { fgColor: m.fgColor, patternType: 'solid' },
+      font: { name: 'Calibri', sz: 10, bold: true, color: { rgb: m.fontRgb } },
+      fill: { fgColor: m.fgColor, patternType: 'solid' },
       alignment: { horizontal: 'center', vertical: 'center' },
-      border:    xlBorder('e2e8f0'),
+      border: xlBorder('e2e8f0'),
     };
   },
   scoreCell: (pct, shade) => {
     const rgb = pct >= 75 ? XL.SCORE_GRN : pct >= 40 ? XL.SCORE_AMB : XL.SCORE_RED;
     return {
-      font:      { name: 'Calibri', sz: 10, bold: true, color: { rgb } },
-      fill:      { fgColor: { rgb: shade ? XL.GRAY_ALT : XL.WHITE }, patternType: 'solid' },
+      font: { name: 'Calibri', sz: 10, bold: true, color: { rgb } },
+      fill: { fgColor: { rgb: shade ? XL.GRAY_ALT : XL.WHITE }, patternType: 'solid' },
       alignment: { horizontal: 'center', vertical: 'center' },
-      border:    xlBorder('e2e8f0'),
+      border: xlBorder('e2e8f0'),
     };
   },
 };
@@ -177,10 +177,10 @@ const buildPdfTableRow = (r, i) => {
   const scoreVal = Number(r.scoreValue) || 0;
   const scoreMax = Number(r.totalMarks) || 100;
   const scorePct = Math.min(100, Math.round((scoreVal / scoreMax) * 100));
-  const bar      = scoreColor(scorePct);
+  const bar = scoreColor(scorePct);
   const rawStatus = toDisplayStatus(r.status);
-  const sc       = statusColors(rawStatus);
-  const typeBg   = (r.type || '').toUpperCase() === 'MCQ'
+  const sc = statusColors(rawStatus);
+  const typeBg = (r.type || '').toUpperCase() === 'MCQ'
     ? 'background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;'
     : 'background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;';
 
@@ -319,20 +319,20 @@ const FONT_LINK = `
    MAIN COMPONENT
 ══════════════════════════════════════════════════════════ */
 const ReportsTab = () => {
-  const [reportData,      setReportData]      = useState([]);
-  const [students,        setStudents]        = useState([]);
-  const [loading,         setLoading]         = useState(true);
-  const [searchTerm,      setSearchTerm]      = useState('');
-  const [dateFilter,      setDateFilter]      = useState('7');
-  const [batchFilter,     setBatchFilter]     = useState('all');
-  const [monthFilter,     setMonthFilter]     = useState('all');
-  const [exportingPdf,    setExportingPdf]    = useState(false);
-  const [exportingExcel,  setExportingExcel]  = useState(false);
-  const [toast,           setToast]           = useState(null);
+  const [reportData, setReportData] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [dateFilter, setDateFilter] = useState('7');
+  const [batchFilter, setBatchFilter] = useState('all');
+  const [monthFilter, setMonthFilter] = useState('all');
+  const [exportingPdf, setExportingPdf] = useState(false);
+  const [exportingExcel, setExportingExcel] = useState(false);
+  const [toast, setToast] = useState(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('all');
-  const [showHeatmap,          setShowHeatmap]          = useState(false);
-  const [selectedStudents,      setSelectedStudents]      = useState([]);
-  const [reminderModal,         setReminderModal]         = useState(null);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const [reminderModal, setReminderModal] = useState(null);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
@@ -358,11 +358,11 @@ const ReportsTab = () => {
         const students =
           studentsRes.status === 'fulfilled'
             ? (
-              Array.isArray(studentsRes.value?.data)                   ? studentsRes.value.data :
-              Array.isArray(studentsRes.value?.data?.students)         ? studentsRes.value.data.students :
-              Array.isArray(studentsRes.value?.data?.users)            ? studentsRes.value.data.users :
-              Array.isArray(studentsRes.value?.data?.data)             ? studentsRes.value.data.data :
-              []
+              Array.isArray(studentsRes.value?.data) ? studentsRes.value.data :
+                Array.isArray(studentsRes.value?.data?.students) ? studentsRes.value.data.students :
+                  Array.isArray(studentsRes.value?.data?.users) ? studentsRes.value.data.users :
+                    Array.isArray(studentsRes.value?.data?.data) ? studentsRes.value.data.data :
+                      []
             )
             : [];
 
@@ -373,9 +373,9 @@ const ReportsTab = () => {
             ? submissionsRes.value.data
             : [];
 
-        const norm    = (v) => String(v || '').trim().replace(/\s+/g, ' ').toLowerCase();
+        const norm = (v) => String(v || '').trim().replace(/\s+/g, ' ').toLowerCase();
         const compact = (v) => norm(v).replace(/\s+/g, '');
-        const getId   = (v) => {
+        const getId = (v) => {
           if (!v) return '';
           if (typeof v === 'string') return v;
           if (typeof v === 'object') return String(v._id || v.id || v.$oid || '');
@@ -383,44 +383,44 @@ const ReportsTab = () => {
         };
         const toKey = (name, batch) => `${norm(name)}|${norm(batch)}`;
 
-        const byId       = new Map(students.map((s) => [String(s._id), s]));
-        const byNameBatch= new Map(students.map((s) => [toKey(s.name, s.batchId?.batchName || ''), s]));
-        const byName     = new Map(students.map((s) => [norm(s.name), s]));
-        const byCompact  = new Map(students.map((s) => [compact(s.name), s]));
+        const byId = new Map(students.map((s) => [String(s._id), s]));
+        const byNameBatch = new Map(students.map((s) => [toKey(s.name, s.batchId?.batchName || ''), s]));
+        const byName = new Map(students.map((s) => [norm(s.name), s]));
+        const byCompact = new Map(students.map((s) => [compact(s.name), s]));
 
         const rows = submissions.map((sub) => {
-          const sid      = getId(sub.studentId);
+          const sid = getId(sub.studentId);
           const fallback =
             byNameBatch.get(toKey(sub.studentName, sub.batchName)) ||
             byNameBatch.get(toKey(sub.studentName, '')) ||
             byName.get(norm(sub.studentName)) ||
             byCompact.get(compact(sub.studentName));
-          const student  = byId.get(sid) || fallback;
+          const student = byId.get(sid) || fallback;
 
-          const aTitle     = sub.assignmentId?.title || 'Assignment';
-          const aStart     = getValidDate(sub.assignmentId?.startDate);
-          const aDue       = getValidDate(sub.assignmentId?.lastDate, sub.assignmentId?.dueDate);
+          const aTitle = sub.assignmentId?.title || 'Assignment';
+          const aStart = getValidDate(sub.assignmentId?.startDate);
+          const aDue = getValidDate(sub.assignmentId?.lastDate, sub.assignmentId?.dueDate);
           const totalMarks = Number(sub.assignmentId?.totalMarks) || 100;
           const scoreValue = Number(sub.score) || 0;
-          const safeDate   = getValidDate(sub.submittedAt, sub.submissionDate, sub.date, sub.createdAt, sub.updatedAt) || new Date();
-          const fmt        = (d) => d?.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+          const safeDate = getValidDate(sub.submittedAt, sub.submissionDate, sub.date, sub.createdAt, sub.updatedAt) || new Date();
+          const fmt = (d) => d?.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
 
           return {
-            id:           sub._id,
-            studentId:    sid,
-            name:         sub.studentName || student?.name || 'Student',
-            email:        student?.email || sub.studentEmail || sub.userEmail || sub.email || '-',
-            batchName:    sub.batchName || student?.batchId?.batchName || '-',
-            assignment:   aTitle,
-            type:         (sub.assignmentId?.type || 'practical').toUpperCase(),
+            id: sub._id,
+            studentId: sid,
+            name: sub.studentName || student?.name || 'Student',
+            email: student?.email || sub.studentEmail || sub.userEmail || sub.email || '-',
+            batchName: sub.batchName || student?.batchId?.batchName || '-',
+            assignment: aTitle,
+            type: (sub.assignmentId?.type || 'practical').toUpperCase(),
             startDateText: aStart ? fmt(aStart) : '-',
-            dueDateText:  aDue   ? fmt(aDue)   : '-',
-            date:         safeDate,
-            dateText:     fmt(safeDate),
+            dueDateText: aDue ? fmt(aDue) : '-',
+            date: safeDate,
+            dateText: fmt(safeDate),
             scoreValue,
             totalMarks,
-            scoreText:    `${scoreValue}/${totalMarks}`,
-            status:       sub.status === 'graded' ? 'Completed' : 'Pending',
+            scoreText: `${scoreValue}/${totalMarks}`,
+            status: sub.status === 'graded' ? 'Completed' : 'Pending',
           };
         });
 
@@ -445,7 +445,7 @@ const ReportsTab = () => {
     return students.filter((student) => {
       const studentBatchName = student.batchId?.batchName || student.batchName || '-';
       if (batchFilter !== 'all' && studentBatchName !== batchFilter) return false;
-      
+
       const q = searchTerm.trim().toLowerCase();
       if (q) {
         const nameMatch = (student.name || '').toLowerCase().includes(q);
@@ -514,9 +514,9 @@ const ReportsTab = () => {
 
         return {
           ...s,
-          reportCount:    s.reports.length,
+          reportCount: s.reports.length,
           avgPercent,
-          avgScoreText:   `${avgPercent.toFixed(1)}%`,
+          avgScoreText: `${avgPercent.toFixed(1)}%`,
           latestDateText: s.latestDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }),
           status: s.pendingCount === 0 ? 'Completed' : 'Pending',
           isAtRisk,
@@ -577,10 +577,10 @@ const ReportsTab = () => {
   };
 
   const reportStats = useMemo(() => {
-    const total     = filteredData.length;
+    const total = filteredData.length;
     const completed = filteredData.filter((s) => s.status === 'Completed').length;
-    const pending   = filteredData.filter((s) => s.status === 'Pending').length;
-    const avgScore  = total > 0
+    const pending = filteredData.filter((s) => s.status === 'Pending').length;
+    const avgScore = total > 0
       ? (filteredData.reduce((sum, s) => sum + s.avgPercent, 0) / total).toFixed(1)
       : '0.0';
     return { total, completed, pending, avgScore };
@@ -594,7 +594,7 @@ const ReportsTab = () => {
       showToast('No student records to export.', 'error');
       return;
     }
-    
+
     try {
       const win = window.open('', '_blank');
       if (!win) {
@@ -607,7 +607,7 @@ const ReportsTab = () => {
 
       const tableRows = filteredStudentsForReport.map((student, i) => {
         const batchName = student.batchId?.batchName || student.batchName || '-';
-        const joinedDate = student.createdAt 
+        const joinedDate = student.createdAt
           ? new Date(student.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
           : '-';
 
@@ -799,9 +799,9 @@ const ReportsTab = () => {
     }
 
     try {
-      const XLSX = await import('xlsx').catch(() => null);
+      const XLSX = await import('xlsx-js-style').catch(() => null);
       if (!XLSX) {
-        showToast('xlsx package not found. Run: npm install xlsx', 'error');
+        showToast('xlsx-js-style package not found. Please contact support.', 'error');
         return;
       }
 
@@ -846,7 +846,7 @@ const ReportsTab = () => {
       filteredStudentsForReport.forEach((student, i) => {
         const shade = i % 2 === 1;
         const batchName = student.batchId?.batchName || student.batchName || '-';
-        const joinedDate = student.createdAt 
+        const joinedDate = student.createdAt
           ? new Date(student.createdAt).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
           : '-';
 
@@ -1137,9 +1137,9 @@ const ReportsTab = () => {
     if (exportingExcel || filteredSubmissions.length === 0) return;
     setExportingExcel(true);
     try {
-      const XLSX = await import('xlsx').catch(() => null);
+      const XLSX = await import('xlsx-js-style').catch(() => null);
       if (!XLSX) {
-        showToast('xlsx package not found. Run: npm install xlsx', 'error');
+        showToast('xlsx-js-style package not found. Please contact support.', 'error');
         return;
       }
 
@@ -1203,23 +1203,23 @@ const ReportsTab = () => {
 
       /* Rows 6+ — Data */
       filteredSubmissions.forEach((r, i) => {
-        const shade  = i % 2 === 1;
-        const rawSt  = toDisplayStatus(r.status);
+        const shade = i % 2 === 1;
+        const rawSt = toDisplayStatus(r.status);
         const scoreV = Number(r.scoreValue) || 0;
         const scoreM = Number(r.totalMarks) || 100;
-        const pct    = Math.min(100, Math.round((scoreV / scoreM) * 100));
+        const pct = Math.min(100, Math.round((scoreV / scoreM) * 100));
 
-        setCell(ws, R, 0,  i + 1,              xlStyles.cellCenter(shade));
-        setCell(ws, R, 1,  safe(r.name, 'Student'), xlStyles.cell(shade));
-        setCell(ws, R, 2,  safe(r.email),       xlStyles.cell(shade));
-        setCell(ws, R, 3,  safe(r.batchName),   xlStyles.cell(shade));
-        setCell(ws, R, 4,  safe(r.assignment),  xlStyles.cell(shade));
-        setCell(ws, R, 5,  safe(r.type),        xlStyles.cellCenter(shade));
-        setCell(ws, R, 6,  safe(r.startDateText), xlStyles.cell(shade));
-        setCell(ws, R, 7,  safe(r.dueDateText), xlStyles.cell(shade));
-        setCell(ws, R, 8,  safe(r.dateText),    xlStyles.cell(shade));
-        setCell(ws, R, 9,  safe(r.scoreText),   xlStyles.scoreCell(pct, shade));
-        setCell(ws, R, 10, rawSt,               xlStyles.statusCell(rawSt, shade));
+        setCell(ws, R, 0, i + 1, xlStyles.cellCenter(shade));
+        setCell(ws, R, 1, safe(r.name, 'Student'), xlStyles.cell(shade));
+        setCell(ws, R, 2, safe(r.email), xlStyles.cell(shade));
+        setCell(ws, R, 3, safe(r.batchName), xlStyles.cell(shade));
+        setCell(ws, R, 4, safe(r.assignment), xlStyles.cell(shade));
+        setCell(ws, R, 5, safe(r.type), xlStyles.cellCenter(shade));
+        setCell(ws, R, 6, safe(r.startDateText), xlStyles.cell(shade));
+        setCell(ws, R, 7, safe(r.dueDateText), xlStyles.cell(shade));
+        setCell(ws, R, 8, safe(r.dateText), xlStyles.cell(shade));
+        setCell(ws, R, 9, safe(r.scoreText), xlStyles.scoreCell(pct, shade));
+        setCell(ws, R, 10, rawSt, xlStyles.statusCell(rawSt, shade));
         R++;
       });
 
@@ -1235,7 +1235,7 @@ const ReportsTab = () => {
 
       /* Column widths (Issue 7) */
       ws['!cols'] = [
-        { wch: 8  },  // Sr No
+        { wch: 8 },  // Sr No
         { wch: 24 },  // Student Name
         { wch: 32 },  // Email
         { wch: 22 },  // Batch
@@ -1283,18 +1283,18 @@ const ReportsTab = () => {
       R2++;
 
       filteredData.forEach((s, i) => {
-        const shade   = i % 2 === 1;
-        const rawSt   = toDisplayStatus(s.status);
-        const avgPct  = parseFloat(s.avgPercent.toFixed(1));
+        const shade = i % 2 === 1;
+        const rawSt = toDisplayStatus(s.status);
+        const avgPct = parseFloat(s.avgPercent.toFixed(1));
 
-        setCell(ws2, R2, 0, safe(s.name, 'Student'),   xlStyles.cell(shade));
-        setCell(ws2, R2, 1, safe(s.email),              xlStyles.cell(shade));
-        setCell(ws2, R2, 2, safe(s.batchName),          xlStyles.cell(shade));
-        setCell(ws2, R2, 3, s.reportCount,              xlStyles.cellCenter(shade));
-        setCell(ws2, R2, 4, avgPct,                     xlStyles.scoreCell(avgPct, shade));
-        setCell(ws2, R2, 5, s.completedCount,           xlStyles.cellCenter(shade));
-        setCell(ws2, R2, 6, s.pendingCount,             xlStyles.cellCenter(shade));
-        setCell(ws2, R2, 7, rawSt,                      xlStyles.statusCell(rawSt, shade));
+        setCell(ws2, R2, 0, safe(s.name, 'Student'), xlStyles.cell(shade));
+        setCell(ws2, R2, 1, safe(s.email), xlStyles.cell(shade));
+        setCell(ws2, R2, 2, safe(s.batchName), xlStyles.cell(shade));
+        setCell(ws2, R2, 3, s.reportCount, xlStyles.cellCenter(shade));
+        setCell(ws2, R2, 4, avgPct, xlStyles.scoreCell(avgPct, shade));
+        setCell(ws2, R2, 5, s.completedCount, xlStyles.cellCenter(shade));
+        setCell(ws2, R2, 6, s.pendingCount, xlStyles.cellCenter(shade));
+        setCell(ws2, R2, 7, rawSt, xlStyles.statusCell(rawSt, shade));
         R2++;
       });
 
@@ -1313,12 +1313,12 @@ const ReportsTab = () => {
       /* ── Workbook ─────────────────────────────────────── */
       const wb = XLSX.utils.book_new();
       wb.Props = {
-        Title:       'Student Performance Report',
-        Subject:     'Netwisdome LMS',
-        Author:      'Netwisdome LMS',
+        Title: 'Student Performance Report',
+        Subject: 'Netwisdome LMS',
+        Author: 'Netwisdome LMS',
         CreatedDate: new Date(),
       };
-      XLSX.utils.book_append_sheet(wb, ws,  'Performance Reports');
+      XLSX.utils.book_append_sheet(wb, ws, 'Performance Reports');
       XLSX.utils.book_append_sheet(wb, ws2, 'Student Summary');
       XLSX.writeFile(wb, 'student_performance_report.xlsx');
       showToast('Excel report downloaded successfully!');
@@ -1334,16 +1334,16 @@ const ReportsTab = () => {
      CSV HELPERS
   ══════════════════════════════════════════════════════ */
   const toCsv = (rows) => {
-    const hdr  = ['Student Name','Email','Batch','Assignment','Type',
-                  'Start Date','Due Date','Submission Date','Score','Status'];
+    const hdr = ['Student Name', 'Email', 'Batch', 'Assignment', 'Type',
+      'Start Date', 'Due Date', 'Submission Date', 'Score', 'Status'];
     const body = rows.map((r) => [
-      safe(r.name,'Student'), safe(r.email), safe(r.batchName), safe(r.assignment),
+      safe(r.name, 'Student'), safe(r.email), safe(r.batchName), safe(r.assignment),
       safe(r.type), safe(r.startDateText), safe(r.dueDateText),
       safe(r.dateText || (r.date ? new Date(r.date).toLocaleDateString('en-GB') : '-')),
       safe(r.scoreText), safe(toDisplayStatus(r.status)),
     ]);
     return [hdr, ...body]
-      .map((l) => l.map((c) => `"${String(c).replace(/"/g,'""')}"`).join(','))
+      .map((l) => l.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))
       .join('\n');
   };
 
@@ -1366,35 +1366,35 @@ const ReportsTab = () => {
     const win = window.open('', '_blank');
     if (!win) return;
 
-    const totalReports   = student.reports.length;
+    const totalReports = student.reports.length;
     const completedCount = student.reports.filter(r => toDisplayStatus(r.status) === 'Complete').length;
-    const pendingCount   = totalReports - completedCount;
-    const totalScore     = student.reports.reduce((s, r) => s + (Number(r.scoreValue) || 0), 0);
-    const totalMarks     = student.reports.reduce((s, r) => s + (Number(r.totalMarks) || 100), 0);
-    const avgPct         = totalMarks > 0 ? ((totalScore / totalMarks) * 100).toFixed(1) : '0.0';
-    const avatarText     = initials(student.name || 'S');
+    const pendingCount = totalReports - completedCount;
+    const totalScore = student.reports.reduce((s, r) => s + (Number(r.scoreValue) || 0), 0);
+    const totalMarks = student.reports.reduce((s, r) => s + (Number(r.totalMarks) || 100), 0);
+    const avgPct = totalMarks > 0 ? ((totalScore / totalMarks) * 100).toFixed(1) : '0.0';
+    const avatarText = initials(student.name || 'S');
 
     const rows = student.reports.map((r, i) => {
       const rawStatus = toDisplayStatus(r.status);
       const statusCls = rawStatus === 'Complete' ? 'badge-complete'
-                      : rawStatus === 'Pending'  ? 'badge-pending'
-                      : 'badge-failed';
-      const scoreVal  = Number(r.scoreValue) || 0;
-      const scoreMax  = Number(r.totalMarks)  || 100;
-      const scorePct  = Math.min(100, Math.round((scoreVal / scoreMax) * 100));
-      const bar       = scoreColor(scorePct);
-      const typeCls   = (r.type || '').toUpperCase() === 'MCQ' ? 'type-mcq' : 'type-practical';
+        : rawStatus === 'Pending' ? 'badge-pending'
+          : 'badge-failed';
+      const scoreVal = Number(r.scoreValue) || 0;
+      const scoreMax = Number(r.totalMarks) || 100;
+      const scorePct = Math.min(100, Math.round((scoreVal / scoreMax) * 100));
+      const bar = scoreColor(scorePct);
+      const typeCls = (r.type || '').toUpperCase() === 'MCQ' ? 'type-mcq' : 'type-practical';
 
       return `<tr class="report-row">
         <td class="td-num" data-label="#">${i + 1}</td>
-        <td class="td-assign" data-label="Assignment"><span class="assign-name">${esc(r.assignment||'-')}</span></td>
-        <td data-label="Type"><span class="type-badge ${typeCls}">${esc(r.type||'-')}</span></td>
-        <td class="td-date" data-label="Start">${esc(r.startDateText||'-')}</td>
-        <td class="td-date" data-label="Due">${esc(r.dueDateText||'-')}</td>
-        <td class="td-date" data-label="Submitted">${esc(r.dateText||'-')}</td>
+        <td class="td-assign" data-label="Assignment"><span class="assign-name">${esc(r.assignment || '-')}</span></td>
+        <td data-label="Type"><span class="type-badge ${typeCls}">${esc(r.type || '-')}</span></td>
+        <td class="td-date" data-label="Start">${esc(r.startDateText || '-')}</td>
+        <td class="td-date" data-label="Due">${esc(r.dueDateText || '-')}</td>
+        <td class="td-date" data-label="Submitted">${esc(r.dateText || '-')}</td>
         <td class="td-score" data-label="Score">
           <div class="score-wrap">
-            <span class="score-text" style="color:${bar}">${esc(r.scoreText||'-')}</span>
+            <span class="score-text" style="color:${bar}">${esc(r.scoreText || '-')}</span>
             <div class="score-bar-bg">
               <div class="score-bar-fill" style="width:${scorePct}%;background:${bar};"></div>
             </div>
@@ -1409,7 +1409,7 @@ const ReportsTab = () => {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>${esc(student.name||'Student')} — Reports</title>
+  <title>${esc(student.name || 'Student')} — Reports</title>
   ${FONT_LINK}
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1610,10 +1610,10 @@ const ReportsTab = () => {
     <div class="header-inner">
       <div class="avatar">${avatarText}</div>
       <div class="student-info-hd">
-        <div class="student-name-hd">${esc(student.name||'Student')}</div>
+        <div class="student-name-hd">${esc(student.name || 'Student')}</div>
         <div class="student-meta-hd">
-          <span class="meta-item"><span class="meta-dot"></span>${esc(student.email||'-')}</span>
-          <span class="meta-item"><span class="meta-dot"></span>Batch: ${esc(student.batchName||'-')}</span>
+          <span class="meta-item"><span class="meta-dot"></span>${esc(student.email || '-')}</span>
+          <span class="meta-item"><span class="meta-dot"></span>Batch: ${esc(student.batchName || '-')}</span>
         </div>
         <div class="header-badges">
           <span class="hbadge hbadge-total">📋 ${totalReports} Total Reports</span>
@@ -1658,7 +1658,7 @@ const ReportsTab = () => {
   </div>
 
   <div class="report-footer">
-    <p>Generated by Netwisdome LMS &nbsp;·&nbsp; ${new Date().toLocaleDateString('en-GB', { year:'numeric', month:'long', day:'numeric' })}</p>
+    <p>Generated by Netwisdome LMS &nbsp;·&nbsp; ${new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
     <button class="print-btn" onclick="window.print()">🖨 Print Report</button>
   </div>
 </div>
@@ -1724,7 +1724,7 @@ const ReportsTab = () => {
           </button>
           <button
             className="export-pill excel secondary-pill"
-            style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', borderColor: '#0284c7', color: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            style={{ background: 'linear-gradient(135deg, rgb(36 137 4) 0%, rgb(34 203 8) 100%)', borderColor: 'rgb(2 255 54 / 77%)', color: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             onClick={handleExportStudentDirectoryExcel}
             title="Download Student Directory Roster (Excel)"
           >
@@ -1736,10 +1736,10 @@ const ReportsTab = () => {
       {/* Stat Cards */}
       <div className="reports-stats-grid">
         {[
-          { label: 'Total Students', value: reportStats.total,     cls: '',          delay: '0ms'   },
-          { label: 'Completed',      value: reportStats.completed, cls: 'completed', delay: '60ms'  },
-          { label: 'Pending',        value: reportStats.pending,   cls: 'pending',   delay: '120ms' },
-          { label: 'Avg Score',      value: `${reportStats.avgScore}%`, cls: 'avg',  delay: '180ms' },
+          { label: 'Total Students', value: reportStats.total, cls: '', delay: '0ms' },
+          { label: 'Completed', value: reportStats.completed, cls: 'completed', delay: '60ms' },
+          { label: 'Pending', value: reportStats.pending, cls: 'pending', delay: '120ms' },
+          { label: 'Avg Score', value: `${reportStats.avgScore}%`, cls: 'avg', delay: '180ms' },
         ].map(({ label, value, cls, delay }) => (
           <div
             key={label}
@@ -2015,7 +2015,7 @@ const ReportsTab = () => {
                 const pendingCount = filteredData
                   .filter(s => selectedStudents.includes(s.id))
                   .reduce((sum, s) => sum + s.pendingCount, 0);
-                
+
                 setReminderModal({
                   students: filteredData.filter(s => selectedStudents.includes(s.id)),
                   pendingCount,
@@ -2239,7 +2239,7 @@ const ReportsTab = () => {
                       <p>Dear student,</p>
                       <p style={{ marginTop: '8px' }}>This is an automated reminder from your Netwisdome LMS administrator regarding your pending assignments. We noticed you have pending submissions that require your attention to maintain passing scores.</p>
                       <p style={{ marginTop: '8px' }}>Please log in to your dashboard and complete your tasks as soon as possible.</p>
-                      <p style={{ marginTop: '12px' }}>Best regards,<br/><strong>Netwisdome LMS Admin</strong></p>
+                      <p style={{ marginTop: '12px' }}>Best regards,<br /><strong>Netwisdome LMS Admin</strong></p>
                     </div>
                   </div>
                 </div>
