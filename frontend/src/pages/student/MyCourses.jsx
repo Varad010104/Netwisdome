@@ -3,6 +3,8 @@ import './MyCourses.css';
 import { Clock, Star } from 'lucide-react';
 import { getStoredUserInfo } from '../../utils/userInfo';
 
+import API from "../../services/api";
+
 const MyCourses = ({ onStartAssessment }) => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,8 +22,8 @@ const MyCourses = ({ onStartAssessment }) => {
           return;
         }
 
-        const res = await fetch('http://localhost:5055/api/courses/all');
-        const allCourses = await res.json();
+        const res = await API.get('/courses/all');
+        const allCourses = res.data;
 
         const filtered = Array.isArray(allCourses)
           ? allCourses.filter((course) => {

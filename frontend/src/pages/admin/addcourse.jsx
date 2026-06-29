@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import API from '../../services/api';
 import './addcourse.css';
 import { Upload, Trash2, PlusCircle, BookOpenCheck } from 'lucide-react';
 
 const AddCourse = () => {
-    const API_BASE = 'http://localhost:5055';
+    const API_BASE = window.API_BASE_URL || 'http://localhost:5055';
     const CREATE_COURSE_TIMEOUT_MS = 180000;
     const [batches, setBatches] = useState([]);
     const [batchLoading, setBatchLoading] = useState(true);
@@ -31,12 +32,8 @@ const AddCourse = () => {
             try {
                 setBatchLoading(true);
                 setBatchError('');
-                const res = await fetch(`${API_BASE}/api/batches/all`);
-                if (!res.ok) {
-                    const raw = await res.text();
-                    throw new Error(raw || 'Failed to load batches');
-                }
-                const data = await res.json();
+                const res = await API.get('/batches/all');
+                const data = res.data;
                 const normalized = Array.isArray(data)
                     ? data
                     : Array.isArray(data?.batches)
@@ -56,12 +53,8 @@ const AddCourse = () => {
             try {
                 setCoursesLoading(true);
                 setCoursesError('');
-                const res = await fetch(`${API_BASE}/api/courses/all`);
-                if (!res.ok) {
-                    const raw = await res.text();
-                    throw new Error(raw || 'Failed to load courses');
-                }
-                const data = await res.json();
+                const res = await API.get('/courses/all');
+                const data = res.data;
                 setCourses(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error('Error loading courses:', error);
@@ -145,29 +138,13 @@ const AddCourse = () => {
                 formData.append('image', courseData.image);
             }
 
-            const healthController = new AbortController();
-            const healthTimeoutId = setTimeout(() => healthController.abort(), 5000);
-            const healthResponse = await fetch(`${API_BASE}/`, {
-                signal: healthController.signal
+            const response = await API.post('/courses/create', formData, {
+                timeout: CREATE_COURSE_TIMEOUT_MS
             });
-            clearTimeout(healthTimeoutId);
-            if (!healthResponse.ok) {
-                alert('Backend server is not responding. Please start backend and try again.');
-                return;
-            }
 
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), CREATE_COURSE_TIMEOUT_MS);
-            const response = await fetch(`${API_BASE}/api/courses/create`, {
-                method: 'POST',
-                body: formData,
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-
-            if (response.ok) {
+            if (response.status === 200 || response.status === 201) {
                 alert('Course created successfully!');
-                const created = await response.json();
+                const created = response.data;
                 if (created?.course?._id) {
                     setCourses((prev) => [created.course, ...prev]);
                 }
@@ -183,22 +160,11 @@ const AddCourse = () => {
                 });
                 e.target.reset();
             } else {
-                const raw = await response.text();
-                let parsed = {};
-                try {
-                    parsed = raw ? JSON.parse(raw) : {};
-                } catch (err) {
-                    parsed = {};
-                }
-                alert(parsed.message || raw || 'Error adding course!');
+                alert(response.data?.message || 'Error adding course!');
             }
         } catch (error) {
             console.error('Error adding course:', error);
-            if (error?.name === 'AbortError') {
-                alert('Request timed out. Backend took too long to respond. Please check backend logs and MongoDB.');
-            } else {
-                alert('Server error while adding course!');
-            }
+            alert(error.response?.data?.message || 'Server error while adding course!');
         } finally {
             setIsSubmitting(false);
         }
@@ -211,26 +177,11 @@ const AddCourse = () => {
 
         try {
             setDeletingCourseId(courseId);
-            const response = await fetch(`${API_BASE}/api/courses/${courseId}`, {
-                method: 'DELETE'
-            });
-
-            if (!response.ok) {
-                const raw = await response.text();
-                let parsed = {};
-                try {
-                    parsed = raw ? JSON.parse(raw) : {};
-                } catch (err) {
-                    parsed = {};
-                }
-                alert(parsed.message || raw || 'Failed to delete course');
-                return;
-            }
-
+            await API.delete(`/courses/${courseId}`);
             setCourses((prev) => prev.filter((course) => course._id !== courseId));
         } catch (error) {
             console.error('Error deleting course:', error);
-            alert('Server error while deleting course!');
+            alert(error.response?.data?.message || 'Server error while deleting course!');
         } finally {
             setDeletingCourseId('');
         }

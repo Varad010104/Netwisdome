@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useMemo } from 'react';
+import API from '../../services/api';
 import {
   Search, Clock, Save, RotateCcw, ShieldCheck, Trash2, 
   CheckCircle2, AlertCircle, Filter, BookOpen, User, Calendar, Code
@@ -22,7 +22,7 @@ const EvaluationTab = () => {
   // --- LOGIC (REMAINING UNCHANGED) ---
   const fetchSubmissions = async () => {
     try {
-      const res = await axios.get('http://localhost:5055/api/assignments/submissions/all');
+      const res = await API.get('/assignments/submissions/all');
       setSubmissions(Array.isArray(res.data) ? res.data : []);
     } catch (err) { console.error('Error fetching submissions:', err); }
     finally { setLoading(false); }
@@ -30,7 +30,7 @@ const EvaluationTab = () => {
 
   const fetchBatches = async () => {
     try {
-      const res = await axios.get('http://localhost:5055/api/batches/all');
+      const res = await API.get('/batches/all');
       setAllBatches(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Error fetching batches:', err);
@@ -79,7 +79,7 @@ const EvaluationTab = () => {
   const handleSaveEvaluation = async () => {
     if (!selectedSubmission) return;
     try {
-      await axios.post('http://localhost:5055/api/assignments/evaluate', {
+      await API.post('/assignments/evaluate', {
         submissionId: selectedSubmission._id,
         score: Number(score),
         feedback
@@ -94,7 +94,7 @@ const EvaluationTab = () => {
     if (!selectedSubmission) return;
     if (!window.confirm('Are you sure you want to delete this submission?')) return;
     try {
-      await axios.delete(`http://localhost:5055/api/assignments/submissions/${selectedSubmission._id}`);
+      await API.delete(`/assignments/submissions/${selectedSubmission._id}`);
       setSelectedSubmission(null);
       setScore('');
       setFeedback('');

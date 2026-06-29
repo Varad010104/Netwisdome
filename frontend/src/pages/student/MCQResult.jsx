@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Trophy, CheckCircle, XCircle, Home, Eye, ChevronUp, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Result save karnyasaathi
+import API from "../../services/api"; // Result save karnyasaathi
 import "./MCQResult.css";
 import { getStoredUserInfo } from "../../utils/userInfo";
 
@@ -42,7 +42,7 @@ const MCQResult = ({ questions, userAnswers, assignmentInfo }) => {
           status: 'graded' // MCQ auto-graded asstat
         };
 
-        await axios.post('http://localhost:5055/api/assignments/submit', submissionData);
+        await API.post('/assignments/submit', submissionData);
         setIsSaved(true);
         console.log("Result saved to database!");
       } catch (err) {

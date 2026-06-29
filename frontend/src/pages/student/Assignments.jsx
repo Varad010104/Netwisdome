@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import API from "../../services/api";
 import "./Assignments.css";
 import { FileText, Calendar, Clock, Hash, ChevronRight, List } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -26,14 +26,13 @@ const Assignments = ({ refreshKey = 0 }) => {
         const studentId = userInfo?._id?.toString();
 
         const [assignmentRes, submissionRes] = await Promise.all([
-          axios.get("http://localhost:5055/api/assignments/all"),
-          axios.get("http://localhost:5055/api/assignments/submissions/all")
+          API.get("/assignments/all"),
+          API.get("/assignments/submissions/all")
         ]);
 
         const mcqOnly = (assignmentRes.data || []).filter(
           (item) => item.type === "mcq" && assignmentMatchesBatch(item, studentBatchId)
         );
-
         const assignmentIdSet = new Set(mcqOnly.map((item) => item._id?.toString()));
         const nextSubmissionMap = {};
 

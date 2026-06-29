@@ -15,6 +15,8 @@ import MyCourses from "./MyCourses";
 import LearningNotes from "./LearningNotes";
 import { getStoredUserInfo } from "../../utils/userInfo";
 
+import API from "../../services/api";
+
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState("Dashboard");
@@ -34,39 +36,29 @@ const StudentDashboard = () => {
 
     const refreshFromServer = async () => {
       if (!userInfo?._id) return;
-      const endpoints = [
-        "http://localhost:5055/api/auth/students",
-        "http://localhost:5000/api/auth/students",
-        "/api/auth/students"
-      ];
-
-      for (const url of endpoints) {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) continue;
-          const data = await res.json();
-          const list = Array.isArray(data) ? data : Array.isArray(data?.students) ? data.students : [];
-          const updated = list.find((s) => String(s?._id) === String(userInfo._id));
-          if (updated) {
-            const stored = {
-              ...userInfo,
-              name: updated.name,
-              email: updated.email,
-              batchId: updated.batchId || userInfo.batchId,
-              batchName: updated.batchId?.batchName || updated.batchName || userInfo.batchName
-            };
-            localStorage.setItem("userInfo", JSON.stringify(stored));
-            setUser({
-              name: stored.name || "Student",
-              batchName: stored.batchId?.batchName || stored.batchName || "Active Batch",
-              studentId: stored._id || userInfo._id || ""
-            });
-            setDataRefresh(Date.now());
-          }
-          break;
-        } catch {
-          continue;
+      try {
+        const res = await API.get("/auth/students");
+        const data = res.data;
+        const list = Array.isArray(data) ? data : Array.isArray(data?.students) ? data.students : [];
+        const updated = list.find((s) => String(s?._id) === String(userInfo._id));
+        if (updated) {
+          const stored = {
+            ...userInfo,
+            name: updated.name,
+            email: updated.email,
+            batchId: updated.batchId || userInfo.batchId,
+            batchName: updated.batchId?.batchName || updated.batchName || userInfo.batchName
+          };
+          localStorage.setItem("userInfo", JSON.stringify(stored));
+          setUser({
+            name: stored.name || "Student",
+            batchName: stored.batchId?.batchName || stored.batchName || "Active Batch",
+            studentId: stored._id || userInfo._id || ""
+          });
+          setDataRefresh(Date.now());
         }
+      } catch (err) {
+        console.error("Failed to refresh user info:", err);
       }
     };
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
+import API from "../../services/api";
 import { 
   MessageSquare, 
   X, 
@@ -65,32 +65,23 @@ const WisdomyChatbot = () => {
     try {
       // 1. Fetch persistent chat history from MongoDB
       let historyFetched = false;
-      const historyUrls = [
-        `/api/ai/history/${studentId}`,
-        `http://localhost:5055/api/ai/history/${studentId}`,
-        `http://localhost:5000/api/ai/history/${studentId}`
-      ];
-
-      for (const url of historyUrls) {
-        try {
-          const res = await axios.get(url);
-          if (res.data && res.data.success) {
-            const parsedHistory = res.data.history.map(item => ({
-              sender: item.sender,
-              text: item.text,
-              image: item.imageAttached ? "/placeholder-attached" : null, // Indicate image attached in database
-              timestamp: new Date(item.timestamp)
-            }));
-            
-            if (parsedHistory.length > 0) {
-              setMessages(parsedHistory);
-              historyFetched = true;
-            }
-            break;
+      try {
+        const res = await API.get(`/ai/history/${studentId}`);
+        if (res.data && res.data.success) {
+          const parsedHistory = res.data.history.map(item => ({
+            sender: item.sender,
+            text: item.text,
+            image: item.imageAttached ? "/placeholder-attached" : null, // Indicate image attached in database
+            timestamp: new Date(item.timestamp)
+          }));
+          
+          if (parsedHistory.length > 0) {
+            setMessages(parsedHistory);
+            historyFetched = true;
           }
-        } catch (e) {
-          continue; // Try next URL fallback
         }
+      } catch (e) {
+        console.warn("Failed to fetch chat history:", e.message);
       }
 
       // 2. If no logs exist, fetch exact stats to trigger a proactive welcome alert!
@@ -100,8 +91,8 @@ const WisdomyChatbot = () => {
 
         try {
           const [asgnRes, subRes] = await Promise.all([
-            axios.get('/api/assignments/all'),
-            axios.get('/api/assignments/submissions/all')
+            API.get('/assignments/all'),
+            API.get('/assignments/submissions/all')
           ]);
 
           const list = asgnRes.data || [];
@@ -126,31 +117,22 @@ const WisdomyChatbot = () => {
         }
 
         // Call backend proactive alert endpoint
-        const alertUrls = [
-          "/api/ai/proactive-alert",
-          "http://localhost:5055/api/ai/proactive-alert",
-          "http://localhost:5000/api/ai/proactive-alert"
-        ];
-
-        for (const url of alertUrls) {
-          try {
-            const res = await axios.post(url, {
-              studentId,
-              studentName,
-              pendingCount,
-              completedCount
-            });
-            if (res.data && res.data.success) {
-              setMessages([{
-                sender: "wisdomy",
-                text: res.data.reply,
-                timestamp: new Date()
-              }]);
-              break;
-            }
-          } catch (e) {
-            continue;
+        try {
+          const res = await API.post('/ai/proactive-alert', {
+            studentId,
+            studentName,
+            pendingCount,
+            completedCount
+          });
+          if (res.data && res.data.success) {
+            setMessages([{
+              sender: "wisdomy",
+              text: res.data.reply,
+              timestamp: new Date()
+            }]);
           }
+        } catch (e) {
+          console.warn("Failed to send proactive alert:", e.message);
         }
       }
     } catch (err) {
@@ -188,34 +170,20 @@ const WisdomyChatbot = () => {
   // Call Backend API Flow
   const callBackendAI = async (studentMsg, attachedImg) => {
     const studentId = user?._id?.toString() || "guest_student";
-    const endpoints = [
-      "/api/ai/chat",
-      "http://localhost:5055/api/ai/chat",
-      "http://localhost:5000/api/ai/chat"
-    ];
+    try {
+      const response = await API.post('/ai/chat', {
+        message: studentMsg,
+        studentId,
+        image: attachedImg // pass base64 screenshot
+      });
 
-    let lastError = null;
-
-    for (const url of endpoints) {
-      try {
-        const response = await axios.post(url, {
-          message: studentMsg,
-          studentId,
-          image: attachedImg // pass base64 screenshot
-        });
-
-        if (response.data && response.data.success) {
-          return response.data.reply;
-        }
-      } catch (error) {
-        lastError = error;
-        console.warn(`Failed to connect to ${url}:`, error.message);
-        continue;
+      if (response.data && response.data.success) {
+        return response.data.reply;
       }
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || error.message || "Connection refused";
+      throw new Error(errorMsg);
     }
-
-    const errorMsg = lastError?.response?.data?.message || lastError?.message || "Connection refused";
-    throw new Error(errorMsg);
   };
 
   // Handle message send

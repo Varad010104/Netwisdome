@@ -1,6 +1,6 @@
-﻿import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Users, BookOpen, CheckCircle, TrendingUp, BarChart3 } from 'lucide-react';
-import axios from 'axios';
+import API from '../../services/api';
 import './OverviewTab.css';
 
 const OverviewTab = () => {
@@ -14,9 +14,9 @@ const OverviewTab = () => {
     const fetchOverviewData = async () => {
       try {
         const [studentRes, assignmentRes, submissionRes] = await Promise.allSettled([
-          axios.get('http://localhost:5055/api/auth/students'),
-          axios.get('http://localhost:5055/api/assignments/all'),
-          axios.get('http://localhost:5055/api/assignments/submissions/all')
+          API.get('/auth/students'),
+          API.get('/assignments/all'),
+          API.get('/assignments/submissions/all')
         ]);
 
         const studentsData =

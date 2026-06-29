@@ -5,11 +5,12 @@ import {
   ChevronUp, Sparkles, RefreshCw, Plus
 } from 'lucide-react';
 import NotesCard from './NotesCard';
+import API from '../../services/api';
 import AddLessonModal from './AddLessonModal';
 import './NotesManager.css';
 
 const NotesManager = () => {
-  const API_BASE = 'http://localhost:5055';
+  const API_BASE = window.API_BASE_URL || 'http://localhost:5055';
 
   // API Data states
   const [notes, setNotes] = useState([]);
@@ -42,18 +43,14 @@ const NotesManager = () => {
 
       // Fetch notes, courses, batches concurrently
       const [notesRes, coursesRes, batchesRes] = await Promise.all([
-        fetch(`${API_BASE}/api/notes/all`),
-        fetch(`${API_BASE}/api/courses/all`),
-        fetch(`${API_BASE}/api/batches/all`)
+        API.get('/notes/all'),
+        API.get('/courses/all'),
+        API.get('/batches/all')
       ]);
 
-      if (!notesRes.ok || !coursesRes.ok || !batchesRes.ok) {
-        throw new Error('Failed to fetch data from the server. Please check backend.');
-      }
-
-      const notesData = await notesRes.json();
-      const coursesData = await coursesRes.json();
-      const batchesData = await batchesRes.json();
+      const notesData = notesRes.data;
+      const coursesData = coursesRes.data;
+      const batchesData = batchesRes.data;
 
       setNotes(Array.isArray(notesData) ? notesData : []);
       setCourses(Array.isArray(coursesData) ? coursesData : []);
@@ -79,24 +76,14 @@ const NotesManager = () => {
   const handleSaveNote = async (formData, noteId) => {
     const isEdit = !!noteId;
     const url = isEdit 
-      ? `${API_BASE}/api/notes/update/${noteId}` 
-      : `${API_BASE}/api/notes/create`;
+      ? `/notes/update/${noteId}` 
+      : `/notes/create`;
     
-    const response = await fetch(url, {
-      method: isEdit ? 'PUT' : 'POST',
-      body: formData
-    });
+    const response = isEdit 
+      ? await API.put(url, formData)
+      : await API.post(url, formData);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorObj = {};
-      try {
-        errorObj = JSON.parse(errorText);
-      } catch (e) {}
-      throw new Error(errorObj.message || errorText || `Failed to ${isEdit ? 'update' : 'create'} note`);
-    }
-
-    const result = await response.json();
+    const result = response.data;
     
     if (isEdit) {
       setNotes(prev => prev.map(note => note._id === noteId ? result.note : note));
@@ -121,19 +108,12 @@ const NotesManager = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE}/api/notes/delete/${noteId}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete the lesson notes.');
-      }
-
+      await API.delete(`/notes/delete/${noteId}`);
       setNotes(prev => prev.filter(note => note._id !== noteId));
       alert('Lesson notes deleted successfully.');
     } catch (err) {
       console.error('Error deleting notes:', err);
-      alert(err.message || 'Failed to delete note.');
+      alert(err.response?.data?.message || err.message || 'Failed to delete note.');
     }
   };
 

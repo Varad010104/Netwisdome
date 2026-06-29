@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import API from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Calendar, Clock } from "lucide-react";
 import "./AssignedAssignments.css";
@@ -26,8 +26,8 @@ const AssignedAssignments = ({ refreshKey = 0 }) => {
         const studentId = userInfo?._id?.toString();
 
         const [assignmentRes, submissionRes] = await Promise.all([
-          axios.get("http://localhost:5055/api/assignments/all"),
-          axios.get("http://localhost:5055/api/assignments/submissions/all")
+          API.get("/assignments/all"),
+          API.get("/assignments/submissions/all")
         ]);
 
         const practicalAssignments = (assignmentRes.data || []).filter(

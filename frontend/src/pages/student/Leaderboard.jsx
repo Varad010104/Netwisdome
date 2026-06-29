@@ -1,7 +1,7 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./Leaderboard.css";
 import { Trophy } from "lucide-react";
-import axios from "axios";
+import API from "../../services/api";
 
 const Leaderboard = ({ currentBatchName = "" }) => {
   const [students, setStudents] = useState([]);
@@ -12,8 +12,8 @@ const Leaderboard = ({ currentBatchName = "" }) => {
     const fetchLeaderboardData = async () => {
       try {
         const [studentsRes, submissionsRes] = await Promise.all([
-          axios.get("http://localhost:5055/api/auth/students"),
-          axios.get("http://localhost:5055/api/assignments/submissions/all")
+          API.get("/auth/students"),
+          API.get("/assignments/submissions/all")
         ]);
 
         setStudents(Array.isArray(studentsRes.data) ? studentsRes.data : []);

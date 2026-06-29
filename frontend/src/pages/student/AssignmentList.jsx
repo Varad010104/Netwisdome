@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -39,14 +39,13 @@ const AssignmentList = () => {
         const studentId = userInfo?._id?.toString();
 
         const [assignmentRes, submissionRes] = await Promise.all([
-          axios.get('http://localhost:5055/api/assignments/all'),
-          axios.get('http://localhost:5055/api/assignments/submissions/all')
+          API.get('/assignments/all'),
+          API.get('/assignments/submissions/all')
         ]);
 
         const practicalAssignments = (assignmentRes.data || []).filter(
           (asgn) => asgn.type === 'practical' && assignmentMatchesBatch(asgn, studentBatchId)
         );
-
         setAssignments(practicalAssignments);
 
         const assignmentIdSet = new Set(practicalAssignments.map((item) => item._id?.toString()));

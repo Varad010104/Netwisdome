@@ -3,13 +3,12 @@ import {
   FileDown, FileSpreadsheet, Filter, Search,
   DownloadCloud, Calendar, FileBarChart2
 } from 'lucide-react';
-import axios from 'axios';
+import API from '../../services/api';
 import './ReportsTab.css';
 
 /* ══════════════════════════════════════════════════════════
    CONSTANTS
 ══════════════════════════════════════════════════════════ */
-const API_BASE = 'http://localhost:5055';
 
 // Excel theme colours
 const XL = {
@@ -351,8 +350,8 @@ const ReportsTab = () => {
     const fetchReports = async () => {
       try {
         const [studentsRes, submissionsRes] = await Promise.allSettled([
-          axios.get(`${API_BASE}/api/auth/students`),
-          axios.get(`${API_BASE}/api/assignments/submissions/all`),
+          API.get('/auth/students'),
+          API.get('/assignments/submissions/all'),
         ]);
 
         const students =

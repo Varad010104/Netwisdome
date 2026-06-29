@@ -5,6 +5,8 @@ import { Lock } from 'lucide-react';
 import './certificate.css';
 import { getStoredUserInfo } from '../../utils/userInfo';
 
+import API from '../../services/api';
+
 const Certificate = () => {
   const certificateRef = useRef(null);
   const userInfo = getStoredUserInfo();
@@ -30,51 +32,40 @@ const Certificate = () => {
   useEffect(() => {
     const refreshStatus = async () => {
       if (!userInfo?._id) return;
-      const endpoints = [
-        `http://localhost:5055/api/auth/student/${userInfo._id}`,
-        `http://localhost:5000/api/auth/student/${userInfo._id}`,
-        `/api/auth/student/${userInfo._id}`
-      ];
-
-      for (const url of endpoints) {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) continue;
-          const data = await res.json();
-          const updated = data?.student || data?.data || null;
-          if (updated) {
-            const nextStatus = updated?.certificateStatus === 'issued' || updated?.certificateIssued === true;
-            setIsIssued(nextStatus);
-            if (updated?.createdAt) {
-              const d = new Date(updated.createdAt);
-              if (!Number.isNaN(d.getTime())) {
-                setJoiningDate(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
-              }
+      try {
+        const res = await API.get(`/auth/student/${userInfo._id}`);
+        const updated = res.data?.student || res.data?.data || null;
+        if (updated) {
+          const nextStatus = updated?.certificateStatus === 'issued' || updated?.certificateIssued === true;
+          setIsIssued(nextStatus);
+          if (updated?.createdAt) {
+            const d = new Date(updated.createdAt);
+            if (!Number.isNaN(d.getTime())) {
+              setJoiningDate(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
             }
-            if (updated?.certificateIssuedAt) {
-              const d = new Date(updated.certificateIssuedAt);
-              if (!Number.isNaN(d.getTime())) {
-                setIssuedDate(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
-              }
-            } else if (nextStatus) {
-              const now = new Date();
-              setIssuedDate(now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
-            } else {
-              setIssuedDate('');
-            }
-            const stored = {
-              ...userInfo,
-              certificateStatus: updated.certificateStatus,
-              certificateIssued: updated.certificateIssued,
-              createdAt: updated.createdAt || userInfo?.createdAt,
-              certificateIssuedAt: updated.certificateIssuedAt || (nextStatus ? new Date().toISOString() : null)
-            };
-            localStorage.setItem('userInfo', JSON.stringify(stored));
           }
-          break;
-        } catch {
-          continue;
+          if (updated?.certificateIssuedAt) {
+            const d = new Date(updated.certificateIssuedAt);
+            if (!Number.isNaN(d.getTime())) {
+              setIssuedDate(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+            }
+          } else if (nextStatus) {
+            const now = new Date();
+            setIssuedDate(now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+          } else {
+            setIssuedDate('');
+          }
+          const stored = {
+            ...userInfo,
+            certificateStatus: updated.certificateStatus,
+            certificateIssued: updated.certificateIssued,
+            createdAt: updated.createdAt || userInfo?.createdAt,
+            certificateIssuedAt: updated.certificateIssuedAt || (nextStatus ? new Date().toISOString() : null)
+          };
+          localStorage.setItem('userInfo', JSON.stringify(stored));
         }
+      } catch (err) {
+        console.error("Error refreshing certificate status:", err);
       }
     };
 

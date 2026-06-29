@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; 
+import API from '../../services/api'; 
 import { 
   Trophy, CheckCircle2, MessageSquare, 
   Download, Timer, Rocket, Search
@@ -16,22 +16,22 @@ const AutoResult = () => {
   const [submissionData, setSubmissionData] = useState(null);
   const [isGraded, setIsGraded] = useState(false);
 
-  // --- à¤¬à¥…à¤•à¤à¤‚à¤¡ à¤®à¤§à¥‚à¤¨ à¤¸à¤¬à¤®à¤¿à¤¶à¤¨ à¤¸à¥à¤Ÿà¥‡à¤Ÿà¤¸ à¤šà¥‡à¤• à¤•à¤°à¤£à¥‡ ---
+  // --- à¤¬à¥…à¤•à¤ à¤‚à¤¡ à¤®à¤§à¥‚à¤¨ à¤¸à¤¬à¤®à¤¿à¤¶à¤¨ à¤¸à¥ à¤Ÿà¥‡à¤Ÿà¤¸ à¤šà¥‡à¤• à¤•à¤°à¤£à¥‡ ---
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        // âœ… 1. LocalStorage à¤®à¤§à¥‚à¤¨ à¤µà¤¿à¤¦à¥à¤¯à¤¾à¤°à¥à¤¥à¥à¤¯à¤¾à¤šà¥€ ID à¤®à¤¿à¤³à¤µà¤¾
+        // âœ… 1. LocalStorage à¤®à¤§à¥‚à¤¨ à¤µà¤¿à¤¦à¥ à¤¯à¤¾à¤°à¥ à¤¥à¥ à¤¯à¤¾à¤šà¥€ ID à¤®à¤¿à¤³à¤µà¤¾
         const userInfo = getStoredUserInfo();
         const studentId = userInfo?._id;
 
-        // âœ… 2. API à¤•à¥‰à¤²à¤®à¤§à¥à¤¯à¥‡ Assignment ID à¤†à¤£à¤¿ Student ID à¤¦à¥‹à¤¨à¥à¤¹à¥€ à¤ªà¤¾à¤ à¤µà¤¾
-        // à¤¤à¥à¤à¥à¤¯à¤¾ à¤¬à¥…à¤•à¤à¤‚à¤¡ à¤°à¥‚à¤Ÿà¤¨à¥à¤¸à¤¾à¤° à¤¹à¥‡ à¤®à¥‰à¤¡à¤¿à¤«à¤¾à¤¯ à¤•à¤°à¤¾à¤µà¥‡ à¤²à¤¾à¤—à¥‡à¤², à¤‰à¤¦à¤¾: /submission/:assignmentId/:studentId
-        const response = await axios.get(`http://localhost:5055/api/assignments/submission/${id}/${studentId}`);
+        // âœ… 2. API à¤•à¥‰à¤²à¤®à¤§à¥ à¤¯à¥‡ Assignment ID à¤†à¤£à¤¿ Student ID à¤¦à¥‹à¤¨à¥ à¤¹à¥€ à¤ªà¤¾à¤ à¤µà¤¾
+        // à¤¤à¥ à¤ à¥ à¤¯à¤¾ à¤¬à¥…à¤•à¤ à¤‚à¤¡ à¤°à¥‚à¤Ÿà¤¨à¥ à¤¸à¤¾à¤° à¤¹à¥‡ à¤®à¥‰à¤¡à¤¿à¤«à¤¾à¤¯ à¤•à¤°à¤¾à¤µà¥‡ à¤²à¤¾à¤—à¥‡à¤², à¤‰à¤¦à¤¾: /submission/:assignmentId/:studentId
+        const response = await API.get(`/assignments/submission/${id}/${studentId}`);
         const data = response.data;
         
         if (data) {
           setSubmissionData(data);
-          // à¤œà¤° à¤¸à¥à¤Ÿà¥‡à¤Ÿà¤¸ 'graded' à¤…à¤¸à¥‡à¤² à¤¤à¤° à¤°à¤¿à¤à¤²à¥à¤Ÿ à¤¸à¥à¤•à¥à¤°à¥€à¤¨ à¤¦à¤¾à¤–à¤µà¤¾
+          // à¤œà¤° à¤¸à¥ à¤Ÿà¥‡à¤Ÿà¤¸ 'graded' à¤…à¤¸à¥‡à¤² à¤¤à¤° à¤°à¤¿à¤ à¤²à¥ à¤Ÿ à¤¸à¥ à¤•à¥ à¤°à¥€à¤¨ à¤¦à¤¾à¤–à¤µà¤¾
           if (data.status === 'graded') {
             setIsGraded(true);
           }

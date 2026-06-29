@@ -3,7 +3,7 @@ import {
   Send, Plus, Trash2, Code, Clock, FileText, 
   Calendar, Award, CheckCircle, ListFilter, LayoutGrid, Layers
 } from 'lucide-react';
-import axios from 'axios';
+import API from '../../services/api';
 import './CreateAssignmentTab.css';
 import { assignmentMatchesBatch, getAssignmentBatchIds } from '../../utils/assignmentBatch';
 
@@ -28,7 +28,7 @@ const CreateAssignmentTab = () => {
   useEffect(() => {
     const fetchBatches = async () => {
       try {
-        const res = await axios.get('http://localhost:5055/api/batches/all');
+        const res = await API.get('/batches/all');
         setBatches(res.data);
         if (res.data?.length > 0) setSelectedBatchId(res.data[0]._id);
       } catch (error) { console.error("Error fetching batches:", error); }
@@ -40,7 +40,7 @@ const CreateAssignmentTab = () => {
 
   const fetchAssignments = async () => {
     try {
-      const res = await axios.get('http://localhost:5055/api/assignments/all');
+      const res = await API.get('/assignments/all');
       setAssignments(Array.isArray(res.data) ? res.data : []);
     } catch (error) { setAssignments([]); }
   };
@@ -142,7 +142,7 @@ const CreateAssignmentTab = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5055/api/assignments/create', finalData);
+      const response = await API.post('/assignments/create', finalData);
       const msg = response?.data?.message || "Assignment Published Successfully!";
       const sent = Number(response?.data?.sent || 0);
       const failed = Number(response?.data?.failed || 0);
@@ -164,7 +164,7 @@ const CreateAssignmentTab = () => {
   const handleDeleteAssignment = async (id) => {
     if (!window.confirm("Delete this assignment?")) return;
     try {
-      await axios.delete(`http://localhost:5055/api/assignments/${id}`);
+      await API.delete(`/assignments/${id}`);
       fetchAssignments();
     } catch (error) { alert("Failed to delete."); }
   };

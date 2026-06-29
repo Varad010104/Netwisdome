@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import API from '../../services/api';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 
@@ -13,6 +13,7 @@ const Login = () => {
   const [loginPassword, setLoginPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
   const errorTimerRef = useRef(null);
   const successTimerRef = useRef(null);
   const successNavigateRef = useRef(null);
@@ -28,7 +29,7 @@ const Login = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5055/api/auth/login', {
+      const response = await API.post('/auth/login', {
         email: loginEmail,
         password: loginPassword,
       });

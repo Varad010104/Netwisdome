@@ -1,8 +1,10 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./ProgressCard.css";
 import { Calendar } from "lucide-react";
 import { getStoredUserInfo } from "../../utils/userInfo";
 import { assignmentMatchesBatch } from "../../utils/assignmentBatch";
+
+import API from "../../services/api";
 
 const ProgressCard = () => {
   const [progress, setProgress] = useState(0);
@@ -21,18 +23,16 @@ const ProgressCard = () => {
         }
 
         const [assignmentsRes, submissionsRes] = await Promise.all([
-          fetch("http://localhost:5055/api/assignments/all"),
-          fetch("http://localhost:5055/api/assignments/submissions/all")
+          API.get("/assignments/all"),
+          API.get("/assignments/submissions/all")
         ]);
 
-        const assignmentsData = await assignmentsRes.json();
-        const submissionsData = await submissionsRes.json();
+        const assignmentsData = assignmentsRes.data;
+        const submissionsData = submissionsRes.data;
 
         const batchAssignments = (Array.isArray(assignmentsData) ? assignmentsData : []).filter((a) =>
           assignmentMatchesBatch(a, studentBatchId)
         );
-
-        const totalAssignments = batchAssignments.length;
 
         if (totalAssignments === 0) {
           setProgress(0);

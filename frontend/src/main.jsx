@@ -4,7 +4,7 @@ import App from './App.jsx'
 import axios from 'axios'
 
 // Set up dynamic API URL redirection for production deployments
-const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5055';
+const apiBase = (import.meta.env.VITE_API_URL || 'http://localhost:5055').replace('/api', '');
 window.API_BASE_URL = apiBase;
 
 // Intercept all Axios calls

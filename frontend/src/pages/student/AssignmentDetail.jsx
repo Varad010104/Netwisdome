@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; 
+import API from '../../services/api'; 
 import { 
   FileText, Info, AlertCircle, Send, Code2, 
   ChevronLeft, CheckCircle2, Clock, BookOpen, Target
@@ -29,7 +29,7 @@ const AssignmentDetail = () => {
         const bName = userInfo?.batchId?.batchName || userInfo?.batchName || '';
         setStudentBatchName(bName);
 
-        const res = await axios.get(`http://localhost:5055/api/assignments/all`);
+        const res = await API.get(`/assignments/all`);
         const found = res.data.find(item => item._id === id);
         if (found) {
           setActiveQuestion(found);
@@ -82,7 +82,7 @@ const AssignmentDetail = () => {
         score: isLate ? 0 : 0
       };
       
-      await axios.post('http://localhost:5055/api/assignments/submit', submissionData);
+      await API.post('/assignments/submit', submissionData);
       navigate(`/student/assignment/result/${id}`);
     } catch (error) {
       console.error("Submission failed:", error);

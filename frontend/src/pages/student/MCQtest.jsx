@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; 
-import axios from "axios"; 
+import API from "../../services/api"; 
 import { ChevronRight, ChevronLeft, Timer, Award, AlertCircle, HelpCircle } from "lucide-react";
 import MCQResult from "./MCQResult";
 import "./MCQtest.css";
@@ -29,7 +29,7 @@ const MCQtest = () => {
         const bName = userInfo?.batchId?.batchName || userInfo?.batchName || "Active Batch";
         setStudentBatchName(bName);
 
-        const res = await axios.get(`http://localhost:5055/api/assignments/all`);
+        const res = await API.get(`/assignments/all`);
         const quiz = res.data.find(q => q._id === id);
         
         if (quiz) {

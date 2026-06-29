@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
+import API from "../../services/api";
 import { useNavigate } from 'react-router-dom';
 import "./LoginAdmin.css";
 
@@ -33,7 +33,7 @@ const LoginAdmin = () => {
   useEffect(() => {
     const checkSetup = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5055/api/auth/admin/check-setup");
+        const { data } = await API.get("/auth/admin/check-setup");
         if (!data.isSetup) {
           // Setup state available
         }
@@ -56,7 +56,7 @@ const LoginAdmin = () => {
     clearMessages();
 
     try {
-      const { data } = await axios.post("http://localhost:5055/api/auth/admin/login", {
+      const { data } = await API.post("/auth/admin/login", {
         email: adminEmail,
         password: adminPassword,
       });
@@ -91,7 +91,7 @@ const LoginAdmin = () => {
     }
 
     try {
-      const { data } = await axios.post("http://localhost:5055/api/auth/admin/register", {
+      const { data } = await API.post("/auth/admin/register", {
         email: adminEmail,
         password: adminPassword,
         confirmPassword,
@@ -119,7 +119,7 @@ const LoginAdmin = () => {
   const switchToSetup = async () => {
     clearMessages();
     try {
-      const { data } = await axios.get("http://localhost:5055/api/auth/admin/check-setup");
+      const { data } = await API.get("/auth/admin/check-setup");
       if (data.isSetup) {
         setMode("locked");
       } else {

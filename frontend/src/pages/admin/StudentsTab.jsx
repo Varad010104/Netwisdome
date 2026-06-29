@@ -1,12 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import API from '../../services/api';
 import { 
   Users, UserPlus, Search, Trash2, X, 
   Layers, GraduationCap, Mail, Fingerprint, Calendar, Eye, Info
 } from 'lucide-react';
 import './StudentsTab.css';
-
-const API_BASES = ['http://localhost:5055', 'http://localhost:5000'];
 
 const StudentsTab = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,39 +30,13 @@ const StudentsTab = () => {
   // --- LOGIC (KEEPING IT UNTOUCHED AS REQUESTED) ---
   useEffect(() => { fetchData(); }, []);
 
-  const requestWithFallback = async (config) => {
-    let lastError = null;
-    const attemptedUrls = [];
-    for (const base of API_BASES) {
-      const url = `${base}${config.url}`;
-      attemptedUrls.push(url);
-      try {
-        const response = await axios({ ...config, url });
-        response.__baseUrlUsed = base;
-        return response;
-      } catch (error) {
-        lastError = error;
-        // If backend responded (4xx/5xx), surface that exact error.
-        // Fallback should be only for true connection failures.
-        if (error?.response) throw error;
-      }
-    }
-    if (!lastError) {
-      throw new Error(`API request failed. Tried: ${attemptedUrls.join(', ')}`);
-    }
-    if (!lastError.response) {
-      throw new Error(`Backend not reachable. Tried: ${attemptedUrls.join(', ')}`);
-    }
-    throw lastError;
-  };
-
   const fetchData = async () => {
     try {
-      const batchRes = await requestWithFallback({ method: 'GET', url: '/api/batches/all' });
+      const batchRes = await API.get('/batches/all');
       const batchData = Array.isArray(batchRes.data) ? batchRes.data : Array.isArray(batchRes.data?.batches) ? batchRes.data.batches : [];
       setBatches(batchData);
 
-      const stuRes = await requestWithFallback({ method: 'GET', url: '/api/auth/students' });
+      const stuRes = await API.get('/auth/students');
       const studentData = Array.isArray(stuRes.data) ? stuRes.data : Array.isArray(stuRes.data?.students) ? stuRes.data.students : Array.isArray(stuRes.data?.users) ? stuRes.data.users : Array.isArray(stuRes.data?.data) ? stuRes.data.data : [];
       setStudents(studentData);
     } catch (error) { console.error("Error fetching data:", error); }
@@ -73,7 +45,7 @@ const StudentsTab = () => {
   const handleDeleteStudent = async (id) => {
     if (window.confirm("Are you sure you want to delete this student?")) {
       try {
-        await requestWithFallback({ method: 'DELETE', url: `/api/auth/student/${id}` });
+        await API.delete(`/auth/student/${id}`);
         alert("Student Deleted Successfully!");
         fetchData();
       } catch (error) {
@@ -85,7 +57,7 @@ const StudentsTab = () => {
   const handleCreateBatch = async () => {
     if (!newBatchName.trim()) return alert("Please enter a batch name!");
     try {
-      const res = await requestWithFallback({ method: 'POST', url: '/api/batches/create', data: { batchName: newBatchName } });
+      const res = await API.post('/batches/create', { batchName: newBatchName });
       alert(res.data.message || "Batch created successfully!");
       setNewBatchName(""); 
       fetchData(); 
@@ -97,7 +69,7 @@ const StudentsTab = () => {
   const handleDeleteBatch = async (batchId, batchName) => {
     if (!window.confirm(`Delete batch "${batchName}"?`)) return;
     try {
-      await requestWithFallback({ method: 'DELETE', url: `/api/batches/${batchId}` });
+      await API.delete(`/batches/${batchId}`);
       alert("Batch Deleted Successfully!");
       fetchData();
     } catch (error) {
@@ -111,8 +83,8 @@ const StudentsTab = () => {
     if(!formData.batchId) return alert("Please select a batch!");
     setIsRegistering(true);
     try {
-      const res = await requestWithFallback({ method: 'POST', url: '/api/auth/register-student', data: formData });
-      alert(`Student Registered Successfully!\nWelcome email is sending in background.\nAPI: ${res?.__baseUrlUsed || 'unknown'}`);
+      const res = await API.post('/auth/register-student', formData);
+      alert(`Student Registered Successfully!\nWelcome email is sending in background.`);
       setFormData({ name: '', email: '', password: '', batchId: '' });
       setIsModalOpen(false);
       fetchData();
@@ -193,7 +165,7 @@ const StudentsTab = () => {
         return;
       }
 
-      const res = await requestWithFallback({ method: 'PUT', url: `/api/auth/student/${selectedStudent._id}`, data: payload });
+      const res = await API.put(`/auth/student/${selectedStudent._id}`, payload);
       alert(res.data?.message || 'Student updated successfully');
       const updatedStudent = res.data?.student || selectedStudent;
       setSelectedStudent(updatedStudent);
@@ -217,11 +189,7 @@ const StudentsTab = () => {
     try {
       const isIssued = student.certificateStatus === 'issued' || student.certificateIssued === true;
       const nextStatus = isIssued ? 'pending' : 'issued';
-      const res = await requestWithFallback({
-        method: 'PUT',
-        url: `/api/auth/student/${student._id}`,
-        data: { certificateStatus: nextStatus }
-      });
+      const res = await API.put(`/auth/student/${student._id}`, { certificateStatus: nextStatus });
       const updatedStudent = res.data?.student || student;
       setStudents((prev) => prev.map((s) => (String(s._id) === String(updatedStudent._id) ? updatedStudent : s)));
       const fallbackMsg = nextStatus === 'issued' ? 'Certificate issued successfully' : 'Certificate locked successfully';

@@ -1,8 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import API from '../../services/api';
 import './Attendance.css';
 import { Search, Users, CheckCircle, XCircle } from 'lucide-react';
-
-const API_BASES = ['http://localhost:5055', 'http://localhost:5000', ''];
 
 const Attendance = () => {
   const getTodayISO = () => {
@@ -27,60 +25,15 @@ const Attendance = () => {
   const [recordsDate, setRecordsDate] = useState(getTodayISO());
   const [recordsBatch, setRecordsBatch] = useState('');
 
-  const parseJsonSafe = async (response) => {
-    const raw = await response.text();
-    try {
-      return raw ? JSON.parse(raw) : {};
-    } catch {
-      return { __raw: raw, __invalidJson: true };
-    }
-  };
-
-  const withBase = (base, path) => {
-    if (!base) return path;
-    return `${base}${path}`;
-  };
-
-  const requestWithFallback = async (paths, options = {}) => {
-    const errors = [];
-
-    for (const base of API_BASES) {
-      for (const path of paths) {
-        const url = withBase(base, path);
-        try {
-          const response = await fetch(url, options);
-          const json = await parseJsonSafe(response);
-
-          if (!response.ok) {
-            const msg = json?.message || json?.error || (json?.__raw ? String(json.__raw).slice(0, 100) : `HTTP ${response.status}`);
-            errors.push(`${url} -> ${msg}`);
-            continue;
-          }
-
-          if (json?.__invalidJson) {
-            errors.push(`${url} -> Invalid JSON`);
-            continue;
-          }
-
-          return { response, data: json, url };
-        } catch (error) {
-          errors.push(`${url} -> ${error.message}`);
-        }
-      }
-    }
-
-    throw new Error(`Attendance API failed. ${errors[0] || 'No reachable endpoint.'}`);
-  };
-
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         setLoading(true);
 
-        const studentsReq = requestWithFallback(['/api/auth/students'], { method: 'GET' });
-        const batchesReq = requestWithFallback(['/api/batches/all'], { method: 'GET' });
-
-        const [studentsRes, batchesRes] = await Promise.all([studentsReq, batchesReq]);
+        const [studentsRes, batchesRes] = await Promise.all([
+          API.get('/auth/students'),
+          API.get('/batches/all')
+        ]);
 
         const studentsJson = studentsRes.data;
         const batchesJson = batchesRes.data;
@@ -111,7 +64,7 @@ const Attendance = () => {
         }
       } catch (error) {
         console.error('Failed to load attendance data:', error);
-        alert(error.message || 'Failed to load attendance data.');
+        alert(error.response?.data?.message || error.message || 'Failed to load attendance data.');
       } finally {
         setLoading(false);
       }
@@ -141,13 +94,8 @@ const Attendance = () => {
           batch: selectedBatch
         }).toString();
 
-        const { data } = await requestWithFallback([
-          `/api/attendance/by-date?${query}`,
-          `/api/attendance?${query}`,
-          `/api?${query}`
-        ]);
-
-        const attendance = data?.data;
+        const res = await API.get(`/attendance/by-date?${query}`);
+        const attendance = res.data?.data;
         if (!attendance?.records) {
           setRecordsLoading(false);
           return;
@@ -163,7 +111,7 @@ const Attendance = () => {
           }))
         );
       } catch (error) {
-        const message = error?.message || '';
+        const message = error.response?.data?.message || error.message || '';
         if (message.includes('No records found')) {
           setRecordsError('');
           setAttendanceRecords([]);
@@ -198,13 +146,8 @@ const Attendance = () => {
           batch: recordsBatch
         }).toString();
 
-        const { data } = await requestWithFallback([
-          `/api/attendance/by-date?${query}`,
-          `/api/attendance?${query}`,
-          `/api?${query}`
-        ]);
-
-        const attendance = data?.data;
+        const res = await API.get(`/attendance/by-date?${query}`);
+        const attendance = res.data?.data;
         if (!attendance?.records) {
           setRecordsLoading(false);
           return;
@@ -212,7 +155,7 @@ const Attendance = () => {
 
         setAttendanceRecords(attendance.records);
       } catch (error) {
-        const message = error?.message || '';
+        const message = error.response?.data?.message || error.message || '';
         if (message.includes('No records found')) {
           setRecordsError('');
           setAttendanceRecords([]);
@@ -271,14 +214,8 @@ const Attendance = () => {
 
     try {
       setSaving(true);
-      const { data } = await requestWithFallback(
-        ['/api/attendance/save', '/api/attendance', '/api'],
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        }
-      );
+      const res = await API.post('/attendance/save', payload);
+      const data = res.data;
 
       if (!data?.success) {
         throw new Error(data?.message || 'Failed to save attendance');
@@ -287,7 +224,7 @@ const Attendance = () => {
       alert(data.message || 'Attendance saved successfully.');
     } catch (error) {
       console.error('Attendance save failed:', error);
-      alert(error.message || 'Attendance save failed.');
+      alert(error.response?.data?.message || error.message || 'Attendance save failed.');
     } finally {
       setSaving(false);
     }

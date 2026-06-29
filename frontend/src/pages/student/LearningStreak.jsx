@@ -2,8 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./LearningStreak.css";
 import { Flame } from "lucide-react";
 
+import API from "../../services/api";
+
 const LearningStreak = ({ studentId = "", batchName = "" }) => {
-  const API_BASE = "http://localhost:5055";
   const weekDays = ["M", "T", "W", "T", "F", "S", "S"];
   const today = new Date();
   const year = today.getFullYear();
@@ -26,11 +27,11 @@ const LearningStreak = ({ studentId = "", batchName = "" }) => {
           studentId: String(studentId)
         }).toString();
 
-        const response = await fetch(`${API_BASE}/api/attendance/student-month?${query}`);
+        const response = await API.get(`/attendance/student-month?${query}`);
         const map = {};
 
-        if (response.ok) {
-          const result = await response.json();
+        if (response.status === 200) {
+          const result = response.data;
           const rows = Array.isArray(result?.data) ? result.data : [];
 
           rows.forEach((row) => {
@@ -58,9 +59,9 @@ const LearningStreak = ({ studentId = "", batchName = "" }) => {
           const q = new URLSearchParams({ date, batch: batchName }).toString();
 
           try {
-            const dayRes = await fetch(`${API_BASE}/api/attendance/by-date?${q}`);
-            if (!dayRes.ok) return null;
-            const dayJson = await dayRes.json();
+            const dayRes = await API.get(`/attendance/by-date?${q}`);
+            if (dayRes.status !== 200) return null;
+            const dayJson = dayRes.data;
             const records = dayJson?.data?.records || [];
             const record = records.find((r) => String(r.studentId) === String(studentId));
             return record?.status ? { day, status: record.status } : null;

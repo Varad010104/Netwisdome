@@ -9,8 +9,10 @@ import ResourcePreviewModal from './ResourcePreviewModal';
 import { getStoredUserInfo } from '../../utils/userInfo';
 import './LearningNotes.css';
 
+import API from '../../services/api';
+
 const LearningNotes = () => {
-  const API_BASE = 'http://localhost:5055';
+  const API_BASE = window.API_BASE_URL || 'http://localhost:5055';
 
   // API Data states
   const [notes, setNotes] = useState([]);
@@ -53,12 +55,8 @@ const LearningNotes = () => {
       setLoading(true);
       setError('');
       
-      const res = await fetch(`${API_BASE}/api/student/notes?batchId=${batchId}`);
-      if (!res.ok) {
-        throw new Error('Failed to load study materials. Please check your connection.');
-      }
-      
-      const data = await res.json();
+      const res = await API.get(`/student/notes?batchId=${batchId}`);
+      const data = res.data;
       const notesList = Array.isArray(data) ? data : [];
       setNotes(notesList);
 
