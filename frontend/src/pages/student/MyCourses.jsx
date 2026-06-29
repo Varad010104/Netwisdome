@@ -60,7 +60,7 @@ const MyCourses = ({ onStartAssessment }) => {
         {!loading && courses.map((course) => (
           <div key={course._id} className="course-card">
             <div className="card-image">
-              <img src={`http://localhost:5055${course.image}`} alt={course.courseName} />
+              <img src={`${window.API_BASE_URL || 'http://localhost:5055'}${course.image}`} alt={course.courseName} />
               <span className="badge-category">{course.category || 'Course'}</span>
             </div>
             <div className="card-content">
