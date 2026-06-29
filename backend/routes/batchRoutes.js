@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { createBatch, getAllBatches, deleteBatch } = require('../controllers/batchController');
 
-// Routes व्याख्या
+// Routes 
 router.post('/create', createBatch);
 router.get('/all', getAllBatches);
 router.delete('/:id', deleteBatch);

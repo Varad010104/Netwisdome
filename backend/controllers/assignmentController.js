@@ -13,6 +13,13 @@ const { sendAssignmentPublishedEmails, sendCustomReminderEmail } = require('../u
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
+/**
+ * Normalizes batch IDs received from request bodies.
+ * If 'ALL' is present, resolves to all existing batches.
+ * Filters out invalid MongoDB Object IDs.
+ * @param {Array} rawBatchIds - Array of raw batch IDs or names.
+ * @returns {Promise<Array>} List of valid MongoDB Object IDs.
+ */
 const normalizeBatchIdsForStorage = async (rawBatchIds = []) => {
   const selected = Array.isArray(rawBatchIds) ? rawBatchIds : [];
   const hasAll = selected.some((id) => String(id).toUpperCase() === 'ALL');
@@ -29,8 +36,18 @@ const normalizeBatchIdsForStorage = async (rawBatchIds = []) => {
     .map((id) => new mongoose.Types.ObjectId(id));
 };
 
+/**
+ * Validates the email address format.
+ * @param {string} email - The email string to validate.
+ * @returns {boolean} True if formatting matches a valid email layout.
+ */
 const isValidEmail = (email = '') => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
 
+/**
+ * Resolves list of unique student email recipients and batch names based on targeted batch IDs.
+ * @param {Array} batchIds - Array of valid batch Object IDs.
+ * @returns {Promise<object>} Contains { students: Array, batchName: string }.
+ */
 const resolveRecipientsAndBatchName = async (batchIds = []) => {
   let batchName = 'All Batches';
 
@@ -142,11 +159,10 @@ const createAssignment = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 /**
  * GET /api/assignments/all
  * Returns all assignments, sorted by creation date descending.
+ * Maps legacy schema fields to target array format.
  */
 const getAssignments = async (req, res) => {
   try {
@@ -167,8 +183,6 @@ const getAssignments = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-
 /**
  * DELETE /api/assignments/:id
  * Deletes an assignment by ID.
@@ -186,6 +200,10 @@ const deleteAssignment = async (req, res) => {
   }
 };
 
+/**
+ * POST /api/assignments/send-reminders
+ * Dispatches custom email notifications/reminders to an array of students.
+ */
 const sendReminderEmails = async (req, res) => {
   try {
     const { students, subject, body } = req.body;
@@ -216,7 +234,5 @@ const sendReminderEmails = async (req, res) => {
     return res.status(500).json({ message: "Internal server error while sending reminders.", error: error.message });
   }
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 module.exports = { createAssignment, getAssignments, deleteAssignment, sendReminderEmails };

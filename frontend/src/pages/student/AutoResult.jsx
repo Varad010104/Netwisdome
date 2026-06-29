@@ -70,7 +70,7 @@ const AutoResult = () => {
         </header>
 
         {!isGraded ? (
-          /* ðŸŽ¯ CASE 1: à¤¸à¤¬à¤®à¤¿à¤¶à¤¨ à¤à¤¾à¤²à¥‡ à¤†à¤¹à¥‡ à¤ªà¤£ à¤šà¥‡à¤• à¤•à¤°à¤£à¥‡ à¤¬à¤¾à¤•à¥€ à¤†à¤¹à¥‡ */
+         
           <div className="status-card-premium card">
             <div className="status-content">
               <div className="icon-wrapper-animate">
@@ -106,7 +106,7 @@ const AutoResult = () => {
             </div>
           </div>
         ) : (
-          /* ðŸŽ¯ CASE 2: à¤¶à¤¿à¤•à¥à¤·à¤•à¤¾à¤‚à¤¨à¥€ à¤®à¤¾à¤°à¥à¤•à¥à¤¸ à¤¦à¤¿à¤²à¥‡ à¤†à¤¹à¥‡à¤¤ (GRADED) */
+         
           <div className="result-graded-wrapper">
             <div className="result-grid-layout">
               <div className="score-card-premium card">
@@ -151,4 +151,4 @@ const AutoResult = () => {
   );
 };
 
-export default AutoResult;//old
+export default AutoResult;

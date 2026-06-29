@@ -42,8 +42,8 @@ const verifySMTPConnection = async () => {
 // ========================================================
 const buildAssignmentEmailTemplate = (studentName, assignment) => {
   const ctaLink = `${FRONTEND_URL}/?redirect=assignments`;
-  const typeBadgeColor = assignment.type.toLowerCase() === 'mcq' ? '#10B981' : '#F59E0B'; 
-  
+  const typeBadgeColor = assignment.type.toLowerCase() === 'mcq' ? '#10B981' : '#F59E0B';
+
   const formattedStartDate = assignment.startDate ? new Date(assignment.startDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
   const formattedDueDate = assignment.lastDate ? new Date(assignment.lastDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
 
@@ -133,12 +133,6 @@ const buildAssignmentEmailTemplate = (studentName, assignment) => {
                   </div>` : ''}
               </div>
 
-              <div class="btn-container">
-                  <a href="${ctaLink}" class="btn">View Assignment</a>
-              </div>
-              <p style="margin-top:12px;color:#64748b;font-size:12px;word-break:break-all;">
-                Open manually if button fails: ${ctaLink}
-              </p>
           </div>
           <div class="footer">
               <p>&copy; ${new Date().getFullYear()} Netwisdome LMS. All rights reserved.</p>
@@ -291,7 +285,7 @@ const sendAssignmentPublishedEmails = async (students, assignmentData) => {
       });
     }
     const htmlContent = buildAssignmentEmailTemplate(student.name || 'Student', assignmentData);
-    
+
     const mailOptions = {
       from: `"Netwisdome" <${process.env.SMTP_USER}>`,
       replyTo: process.env.MAIL_FROM || process.env.SMTP_USER,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { 
-  FileText, Download, Eye, CheckCircle2, 
+import {
+  FileText, Download, Eye, CheckCircle2,
   Layers, Bookmark, ArrowRight, PlayCircle,
   HelpCircle, MessageSquare, Award, Sparkles
 } from 'lucide-react';
@@ -70,29 +70,29 @@ const LessonViewer = ({ note, onPreviewFile, API_BASE }) => {
         <span className="topic-breadcrumb">
           {note?.courseId?.courseName || 'Course'} <ArrowRight size={12} /> {note?.topicTitle || 'General'}
         </span>
-        
+
         <div className="action-buttons-group">
-          <button 
+          {/* <button 
             className={`viewer-action-btn ${isBookmarked ? 'bookmarked' : ''}`}
             onClick={() => setIsBookmarked(!isBookmarked)}
           >
             <Bookmark size={15} />
             <span>{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
-          </button>
-          
-          <button 
+          </button> */}
+
+          {/* <button
             className={`viewer-action-btn complete-btn ${isCompleted ? 'completed' : ''}`}
             onClick={() => setIsCompleted(!isCompleted)}
           >
             <CheckCircle2 size={15} />
             <span>{isCompleted ? 'Completed' : 'Mark Complete'}</span>
-          </button>
+          </button> */}
         </div>
       </div>
 
       {/* Main lesson content */}
       <div className="viewer-scroll-content">
-        
+
         {/* Banner area */}
         {note?.thumbnail ? (
           <div className="viewer-banner-media">
@@ -110,7 +110,7 @@ const LessonViewer = ({ note, onPreviewFile, API_BASE }) => {
         <div className="viewer-lesson-header">
           <span className="topic-context-tag">{note?.topicTitle || 'General'}</span>
           <h1 className="viewer-lesson-title">{note?.lessonTitle || 'Untitled Lesson'}</h1>
-          
+
           {/* Quick Stats */}
           <div className="quick-stats-row">
             <span className="quick-stat">
@@ -152,18 +152,18 @@ const LessonViewer = ({ note, onPreviewFile, API_BASE }) => {
                       <span>{formatBytes(file?.fileSize)} • {(file?.fileType || 'FILE').toUpperCase()}</span>
                     </div>
                   </div>
-                  
+
                   <div className="card-right-actions">
-                    <button 
-                      className="res-action-btn view-btn" 
+                    <button
+                      className="res-action-btn view-btn"
                       onClick={() => onPreviewFile(file)}
                       title="Preview in Sandbox"
                     >
                       <Eye size={15} />
                       <span>Preview</span>
                     </button>
-                    <button 
-                      className="res-action-btn download-btn" 
+                    <button
+                      className="res-action-btn download-btn"
                       onClick={() => handleDownload(file)}
                       title="Download file to computer"
                     >

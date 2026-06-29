@@ -1,6 +1,9 @@
 const Attendance = require('../models/Attendance');
 
-// Save kiwa Update Attendance
+/**
+ * Saves or updates attendance records for a specific batch and date.
+ * Validates the date, filters/formats student status records, and performs an upsert.
+ */
 const saveOrUpdateAttendance = async (req, res) => {
     try {
         const { date, batch, records, markedBy } = req.body;
@@ -74,7 +77,9 @@ const saveOrUpdateAttendance = async (req, res) => {
     }
 };
 
-// Ekavisht tarakhechi attendance baghnyasathi (Frontend la dakhvanyasathi)
+/**
+ * Fetches attendance records for a specific date and batch.
+ */
 const getAttendanceByDate = async (req, res) => {
     try {
         const { date, batch } = req.query;
@@ -116,6 +121,9 @@ const getAttendanceByDate = async (req, res) => {
     }
 };
 
+/**
+ * Retrieves all attendance records of a specific batch within a given month and year.
+ */
 const getAttendanceByMonth = async (req, res) => {
     try {
         const { month, year, batch } = req.query;
@@ -150,6 +158,10 @@ const getAttendanceByMonth = async (req, res) => {
     }
 };
 
+/**
+ * Retrieves a single student's attendance records within a specific month and year.
+ * Filters and resolves the status of that student from the main records array.
+ */
 const getStudentAttendanceByMonth = async (req, res) => {
     try {
         const { month, year, studentId } = req.query;
@@ -196,6 +208,9 @@ const getStudentAttendanceByMonth = async (req, res) => {
     }
 };
 
+/**
+ * Retrieves all attendance records for a specific student across all dates and batches.
+ */
 const getStudentAttendanceAll = async (req, res) => {
     try {
         const { studentId } = req.query;

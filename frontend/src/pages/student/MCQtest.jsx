@@ -18,15 +18,13 @@ const MCQtest = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isLateModalOpen, setIsLateModalOpen] = useState(false);
-  const [studentBatchName, setStudentBatchName] = useState(""); // âœ… à¤µà¤¿à¤¦à¥à¤¯à¤¾à¤°à¥à¤¥à¥à¤¯à¤¾à¤šà¥‡ à¤¬à¥…à¤š à¤¨à¤¾à¤µ
-
-  // --- à¥§. à¤¬à¥…à¤•à¤à¤‚à¤¡ à¤®à¤§à¥‚à¤¨ à¤…à¤¸à¤¾à¤‡à¤¨à¤®à¥‡à¤‚à¤Ÿ à¤²à¥‹à¤¡ à¤•à¤°à¤£à¥‡ ---
+  const [studentBatchName, setStudentBatchName] = useState(""); 
   const isLate = assignmentInfo?.lastDate ? new Date() > new Date(assignmentInfo.lastDate) : false;
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        // âœ… LocalStorage à¤®à¤§à¥‚à¤¨ à¤¬à¥…à¤š à¤¨à¤¾à¤µ à¤®à¤¿à¤³à¤µà¤¾ (à¤¡à¥…à¤¶à¤¬à¥‹à¤°à¥à¤¡à¤šà¤¾ à¤°à¥‡à¤«à¤°à¤¨à¥à¤¸)
+        
         const userInfo = getStoredUserInfo();
         const bName = userInfo?.batchId?.batchName || userInfo?.batchName || "Active Batch";
         setStudentBatchName(bName);
@@ -51,7 +49,7 @@ const MCQtest = () => {
     fetchQuiz();
   }, [id]);
 
-  // --- à¥¨. à¤—à¥à¤²à¥‹à¤¬à¤² à¤Ÿà¤¾à¤‡à¤®à¤° à¤²à¥‰à¤œà¤¿à¤• ---
+  
   useEffect(() => {
     if (!loading && questions.length > 0 && timeLeft > 0 && !isFinished) {
       const timer = setInterval(() => {
@@ -63,7 +61,7 @@ const MCQtest = () => {
     }
   }, [timeLeft, loading, questions.length, isFinished]);
 
-  // --- à¥©. à¤¨à¥‡à¤µà¥à¤¹à¤¿à¤—à¥‡à¤¶à¤¨ à¤²à¥‰à¤œà¤¿à¤• ---
+
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     const updatedAnswers = [...answers];
@@ -134,7 +132,7 @@ const MCQtest = () => {
             </div>
             <div>
               <h3 className="test-title">{assignmentInfo?.title}</h3>
-              {/* âœ… à¤¬à¤¦à¤²: à¤‡à¤¥à¥‡ à¤†à¤¤à¤¾ ID à¤à¤µà¤œà¥€ à¤‘à¤Ÿà¥‹à¤®à¥…à¤Ÿà¤¿à¤• à¤¬à¥…à¤š à¤¨à¤¾à¤µ (à¤‰à¤¦à¤¾. JAN-2026) à¤¦à¤¿à¤¸à¥‡à¤² */}
+              
               <span className="batch-tag">Batch: {assignmentInfo?.batchId?.batchName || studentBatchName}</span>
             </div>
           </div>

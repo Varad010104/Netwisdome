@@ -63,7 +63,8 @@
   .sidebar-wrapper {
     position: fixed;
     top: 0;
-    left: -280px; /* Hide offscreen */
+    left: -280px;
+    /* Hide offscreen */
     width: 260px;
     height: 100vh;
     padding: 0;

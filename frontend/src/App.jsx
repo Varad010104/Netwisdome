@@ -1,4 +1,5 @@
-﻿import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import Home from './pages/Home/Home';
 import Login from './pages/auth/Login';
 import LoginAdmin from './pages/auth/LoginAdmin';
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -15,17 +16,33 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AllAssesmentlist from './pages/student/AllAssesmentlist';
 
 // --- ATTENDANCE IMPORT ---
-import Attendance from './pages/admin/Attendance'; // हे नाव तुमच्या फाईल पाथनुसार तपासा
+import Attendance from './pages/admin/Attendance'; // Check this file according to the Your LocalHost File.
+
+import WisdomyChatbot from './components/layout/WisdomyChatbot';
 
 import './App.css';
+
+// Conditional Chatbot Wrapper to hide it on public pages
+function ChatbotWrapper() {
+  const location = useLocation();
+  const hidePaths = ['/', '/login', '/student/login', '/admin', '/admin/login'];
+  
+  if (hidePaths.includes(location.pathname)) {
+    return null;
+  }
+  return <WisdomyChatbot />;
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* AUTHENTICATION ROUTES */}
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/student/login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<LoginAdmin />} />
+        <Route path="/admin/login" element={<LoginAdmin />} />
 
         {/* STUDENT PANEL ROUTES */}
         <Route path="/student/dashboard" element={<StudentDashboard />} />
@@ -56,8 +73,10 @@ function App() {
         <Route path="/admin/attendance" element={<Attendance />} />
         
       </Routes>
+      <ChatbotWrapper />
     </BrowserRouter>
   );
 }
 
 export default App;
+

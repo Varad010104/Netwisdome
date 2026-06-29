@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
-import { 
-  LayoutGrid, 
-  BookOpen, 
+import {
+  LayoutGrid,
+  BookOpen,
   Notebook,
-  Rocket, 
-  Award, 
-  Menu, 
+  Rocket,
+  Award,
+  Menu,
   X,
-  LogOut 
+  LogOut
 } from "lucide-react";
 
 const Sidebar = ({ setActivePage, activePage }) => {
@@ -30,7 +30,7 @@ const Sidebar = ({ setActivePage, activePage }) => {
   return (
     <>
       <div className="mobile-header">
-        <span className="mobile-logo">Netwisdome</span> 
+        <span className="mobile-logo">Netwisdome</span>
         <button onClick={() => setIsOpen(!isOpen)} className="menu-toggle-btn">
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
@@ -39,9 +39,9 @@ const Sidebar = ({ setActivePage, activePage }) => {
       <div className={`sidebar-wrapper ${isOpen ? "open" : ""}`}>
         <div className="sidebar">
           {menuItems.map((item, index) => (
-            <div 
-              key={index} 
-              className={`menu-item ${activePage === item.label ? "active" : ""}`} 
+            <div
+              key={index}
+              className={`menu-item ${activePage === item.label ? "active" : ""}`}
               onClick={() => {
                 setActivePage(item.label);
                 setIsOpen(false);
@@ -53,13 +53,13 @@ const Sidebar = ({ setActivePage, activePage }) => {
           ))}
 
           {/* ðŸ”˜ Logout Button - White Color & Stable Design */}
-          <div 
-            className="menu-item" 
+          <div
+            className="menu-item"
             onClick={handleLogout}
-            style={{ 
+            style={{
               color: '#ffffff', // âœ… à¤ªà¥‚à¤°à¥à¤£ à¤ªà¤¾à¤‚à¤¢à¤°à¤¾ à¤°à¤‚à¤—
               marginTop: '10px',
-              borderTop: '1px solid rgba(255,255,255,0.1)' 
+              borderTop: '1px solid rgba(255,255,255,0.1)'
             }}
           >
             <LogOut size={20} color="#ffffff" />
@@ -67,7 +67,7 @@ const Sidebar = ({ setActivePage, activePage }) => {
           </div>
         </div>
       </div>
-      
+
       {isOpen && <div className="overlay" onClick={() => setIsOpen(false)}></div>}
     </>
   );
